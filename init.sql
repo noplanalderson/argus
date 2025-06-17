@@ -1,4 +1,4 @@
--- Create tb_ip_address table
+USE app_db;
 CREATE TABLE IF NOT EXISTS tb_ip_address (
     ip_id_uuid VARCHAR(36) NOT NULL PRIMARY KEY,
     ip_address CHAR(128) NOT NULL,
@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS tb_ip_address (
     updated_at DATETIME NULL
 );
 
--- Create tb_analysis_history table
 CREATE TABLE IF NOT EXISTS tb_analysis_history (
     history_id_uuid VARCHAR(36) NOT NULL PRIMARY KEY,
     ip_id_uuid VARCHAR(36) NOT NULL,
