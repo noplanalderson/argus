@@ -1,0 +1,1 @@
+<?php echo "Silent is Golden :)"; ?>

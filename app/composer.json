@@ -1,0 +1,7 @@
+{
+    "require": {
+        "php": "^8.1",
+        "ramsey/uuid": "^4.7",
+        "vlucas/phpdotenv": "^5.5"
+    }
+}
