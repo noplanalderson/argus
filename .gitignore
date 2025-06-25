@@ -1,4 +1,4 @@
-app/vendor
-app/composer.lock
-app/.env
+microservices/vendor
+microservices/composer.lock
+microservices/.env
 .env

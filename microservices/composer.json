@@ -1,0 +1,16 @@
+{
+    "name": "mrnaeem/microservices",
+    "description": "Mikroservis Keputusan untuk Perhitungan Skor Multi-Sumber Threat Intelligence",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "guzzlehttp/guzzle": "^7.9",
+        "ramsey/uuid": "^4.7",
+        "vlucas/phpdotenv": "^5.5",
+        "evilfreelancer/routeros-api-php": "^1.5"
+    }
+}
