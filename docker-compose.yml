@@ -8,7 +8,6 @@ services:
       - "8088:8088"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./microservices:/var/www/html
     depends_on:
       - php-fpm
     networks:
@@ -16,11 +15,9 @@ services:
 
   php-fpm:
     build:
-      context: ./app
+      context: .
       dockerfile: Dockerfile
     container_name: php-fpm
-    volumes:
-      - ./app:/var/www/html
     networks:
       - app-network
 
