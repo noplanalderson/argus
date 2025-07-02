@@ -35,7 +35,14 @@ class Main
         ) {
             setJSON(['code' => 401, 'error' => 'Unauthorized', 'message' => 'Gome home, you\'re drunk! 🤪'], 401);
         } else {
-            $segments = explode('/', trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/'));
+            $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
+            $path = parse_url($requestUri, PHP_URL_PATH) ?? '';
+
+            if (strpos($path, '/index.php') === 0) {
+                $path = substr($path, strlen('/index.php'));
+            }
+
+            $segments = explode('/', trim($path, '/'));
             $segment = isset($segments[0]) ? $segments[0] : null;
 
             switch ($segment) {
