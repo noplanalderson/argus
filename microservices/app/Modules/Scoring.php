@@ -37,6 +37,8 @@ class Scoring
 
     protected $sOverall = 0;
 
+    protected $recentHistory = null;
+
     protected $decision = ['notification' => true, 'abuse_report' => true];
 
     public function __construct(array $reports)
@@ -142,20 +144,54 @@ class Scoring
         return $this;
     }
 
+    // private function __historyChecking()
+    // {
+    //     $db = (new Database())->getConnection();
+    //     $stmt = $db->prepare("SELECT `a`.`history_id_uuid`, `b`.`ip_id_uuid`, `b`.`ip_address`, `a`.`overall_score`, `a`.`decision`, `a`.`created_at` FROM `tb_analysis_history` `a` INNER JOIN `tb_ip_address` `b` ON `a`.`ip_id_uuid` = `b`.`ip_id_uuid` WHERE `b`.`ip_address` = ?");
+        
+    //     $stmt->execute([$this->reports['observable_name']]);
+    //     $histories = $stmt->fetchAll();
+    //     foreach ($histories as &$history) {
+    //         if (isset($history['decision'])) {
+    //         $history['decision'] = json_decode($history['decision'], true);
+    //         }
+    //     }
+    //     $this->histories = $histories;
+        // return $this;
+    // }
+
     private function __historyChecking()
     {
         $db = (new Database())->getConnection();
-        $stmt = $db->prepare("SELECT `a`.`history_id_uuid`, `b`.`ip_id_uuid`, `b`.`ip_address`, `a`.`overall_score`, `a`.`decision`, `a`.`created_at` FROM `tb_analysis_history` `a` INNER JOIN `tb_ip_address` `b` ON `a`.`ip_id_uuid` = `b`.`ip_id_uuid` WHERE `b`.`ip_address` = ?");
-        
+        $stmt = $db->prepare("
+            SELECT `a`.`history_id_uuid`, `b`.`ip_id_uuid`, `b`.`ip_address`, `a`.`overall_score`, `a`.`decision`, `a`.`created_at`
+            FROM `tb_analysis_history` `a`
+            INNER JOIN `tb_ip_address` `b` ON `a`.`ip_id_uuid` = `b`.`ip_id_uuid`
+            WHERE `b`.`ip_address` = ?
+            ORDER BY `a`.`created_at` DESC
+            LIMIT 1
+        ");
         $stmt->execute([$this->reports['observable_name']]);
-        $histories = $stmt->fetchAll();
-        foreach ($histories as &$history) {
-            if (isset($history['decision'])) {
+        $history = $stmt->fetch();
+
+        if ($history && isset($history['decision'])) {
             $history['decision'] = json_decode($history['decision'], true);
-            }
         }
-        $this->histories = $histories;
-        // return $this;
+
+        $this->recentHistory = $history;
+    }
+
+    private function isRecentlyScored()
+    {
+        if (!$this->recentHistory) {
+            return false;
+        }
+
+        $lastAnalysis = strtotime($this->recentHistory['created_at']);
+        $now = time();
+
+        // 1 hari dalam detik: 1 × 24 × 60 × 60 = 86400
+        return ($now - $lastAnalysis) < 86400;
     }
 
     private function __writeHistory()
@@ -245,17 +281,65 @@ class Scoring
         $this->decision = array_merge($this->decision, ['blockmode' => $decision]);
     }
 
+    // public function run()
+    // {
+    //     // Calculate weighted final risk score
+    //     $sOverall = $this->dataMapping['vtScore'] * $this->vtWeight +
+    //                 $this->dataMapping['abuseIpScore'] * $this->abuseIpWeight +
+    //                 $this->dataMapping['csScore'] * $this->crowdsecWeight;
+
+    //     $this->__historyChecking();
+        
+    //     if(count($this->histories) > 0) {
+    //         $this->sOverall = round(min($sOverall + (1 * count($this->histories)), 100), 0);
+    //     } else {
+    //         $this->sOverall = round($sOverall, 0);
+    //     }
+
+    //     $this->__decision();
+    //     $this->__writeHistory();
+
+    //     return [
+    //         'scores' => $this->sOverall,
+    //         'historyHits' => count($this->histories),
+    //         'histories' => $this->histories,
+    //         'ipaddress' => $this->reports['observable_name'],
+    //         'description' => 'IP analysis based on multiple threat intelligence (Scores '. $this->sOverall .').',
+    //         'reference' => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/visualizer/Reputation',
+    //         'data' => array_merge(
+    //             $this->dataMapping,
+    //             ['decision' => $this->decision]
+    //         )
+    //     ];
+    // }
+
     public function run()
     {
+        $this->__historyChecking();
+
+        if ($this->isRecentlyScored()) {
+            // Balikin hasil existing tanpa analisa ulang
+            return [
+                'scores'       => $this->recentHistory['overall_score'],
+                'historyHits'  => 1,
+                'histories'    => [$this->recentHistory],
+                'ipaddress'    => $this->reports['observable_name'],
+                'description'  => 'This IP was recently analyzed within the last 1 days.',
+                'reference'    => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/visualizer/Reputation',
+                'data'         => array_merge(
+                                    $this->dataMapping,
+                                    ['decision' => $this->recentHistory['decision'] ?? ['notification' => true, 'abuse_report' => true]]
+                                )
+            ];
+        }
+
         // Calculate weighted final risk score
         $sOverall = $this->dataMapping['vtScore'] * $this->vtWeight +
                     $this->dataMapping['abuseIpScore'] * $this->abuseIpWeight +
                     $this->dataMapping['csScore'] * $this->crowdsecWeight;
 
-        $this->__historyChecking();
-        
-        if(count($this->histories) > 0) {
-            $this->sOverall = round(min($sOverall + (1 * count($this->histories)), 100), 0);
+        if($this->recentHistory) {
+            $this->sOverall = round(min($sOverall + 1, 100), 0);
         } else {
             $this->sOverall = round($sOverall, 0);
         }
@@ -265,10 +349,10 @@ class Scoring
 
         return [
             'scores' => $this->sOverall,
-            'historyHits' => count($this->histories),
-            'histories' => $this->histories,
+            'historyHits' => $this->recentHistory ? 1 : 0,
+            'histories' => $this->recentHistory ? [$this->recentHistory] : [],
             'ipaddress' => $this->reports['observable_name'],
-            'description' => 'IP analysis based on multiple threat intelligence (Scores '. $this->sOverall .').',
+            'description' => "IP analysis based on multiple threat intelligence (Scores {$this->sOverall})",
             'reference' => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/visualizer/Reputation',
             'data' => array_merge(
                 $this->dataMapping,
@@ -276,4 +360,5 @@ class Scoring
             )
         ];
     }
+
 }
