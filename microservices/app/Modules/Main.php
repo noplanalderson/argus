@@ -54,13 +54,26 @@ class Main
                         'path' => $segment
                     ], 200);
                     break;
-                
+
+                case 'check':
+                    $ip = $this->request->get('ip');
+                    $checkIP = new \App\Modules\CheckIP($ip);
+                    $status = $checkIP->check();
+                    setJSON([
+                        'code' => 200,
+                        'error' => null,
+                        'message' => "Ok",
+                        'results' => ['ip_address' => $ip, 'status' => $status]
+                    ], 200);
+                    break;
+
                 case 'analyze':
                     $jobId = $this->request->post('job_id');
+                    $firedTimes = $this->request->post('firedtimes');
                     $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
                     $results = [];
                     if($threatIntelResult['status']) {
-                        $scoring = new \App\Modules\Scoring($threatIntelResult['data']);
+                        $scoring = new \App\Modules\Scoring($threatIntelResult['data'], $firedTimes);
                         $extract = $scoring->extractData();
                         $results = $extract->run();
                     }
