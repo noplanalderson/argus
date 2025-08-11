@@ -41,7 +41,7 @@ services:
     restart: unless-stopped
 
 volumes:
-  mariadb_data_prod:
+  mariadb_data:
 
 networks:
   app-network:
