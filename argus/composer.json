@@ -1,6 +1,6 @@
 {
-    "name": "mrnaeem/microservices",
-    "description": "Mikroservis Keputusan untuk Perhitungan Skor Multi-Sumber Threat Intelligence",
+    "name": "mrnaeem/argus",
+    "description": "Argus (Automated Reputation-based Global Untrusted Source-blocker) based on Multiple Threat Intelligence Source and Blocklist",
     "autoload": {
         "psr-4": {
             "App\\": "app/"

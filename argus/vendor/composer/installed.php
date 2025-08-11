@@ -1,24 +1,15 @@
 <?php return array(
     'root' => array(
-        'name' => '__root__',
+        'name' => 'mrnaeem/argus',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'ce49f1f993e271368a9796b4d51cffb33b66d3c4',
+        'reference' => '5a6d20be82e2bc39a3a8fb8379d78110f86b2639',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
         'dev' => true,
     ),
     'versions' => array(
-        '__root__' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'ce49f1f993e271368a9796b4d51cffb33b66d3c4',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../../',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'brick/math' => array(
             'pretty_version' => '0.13.1',
             'version' => '0.13.1.0',
@@ -29,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'evilfreelancer/routeros-api-php' => array(
-            'pretty_version' => '1.5.5',
-            'version' => '1.5.5.0',
-            'reference' => '3460bcd59fc483f81ce8ec873b715976a1b79c7d',
+            'pretty_version' => '1.5.6',
+            'version' => '1.5.6.0',
+            'reference' => 'f07c7fada3f37c3c3579f78f5f3b6403ee85ef58',
             'type' => 'library',
             'install_path' => __DIR__ . '/../evilfreelancer/routeros-api-php',
             'aliases' => array(),
@@ -70,6 +61,15 @@
             'reference' => 'c2270caaabe631b3b44c85f99e5a04bbb8060d16',
             'type' => 'library',
             'install_path' => __DIR__ . '/../guzzlehttp/psr7',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'mrnaeem/argus' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '5a6d20be82e2bc39a3a8fb8379d78110f86b2639',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
@@ -146,9 +146,9 @@
             'dev_requirement' => false,
         ),
         'ramsey/uuid' => array(
-            'pretty_version' => '4.8.1',
-            'version' => '4.8.1.0',
-            'reference' => 'fdf4dd4e2ff1813111bd0ad58d7a1ddbb5b56c28',
+            'pretty_version' => '4.9.0',
+            'version' => '4.9.0.0',
+            'reference' => '4e0e23cc785f0724a0e838279a9eb03f28b092a0',
             'type' => 'library',
             'install_path' => __DIR__ . '/../ramsey/uuid',
             'aliases' => array(),
@@ -157,7 +157,7 @@
         'rhumsaa/uuid' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => '4.8.1',
+                0 => '4.9.0',
             ),
         ),
         'spatie/ssh' => array(
