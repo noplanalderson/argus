@@ -25,7 +25,7 @@ services:
 
   mariadb:
     image: mariadb:latest
-    container_name: mariadb-prod
+    container_name: mariadb
     ports:
       - "3306:3306"
     environment:
