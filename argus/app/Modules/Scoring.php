@@ -21,7 +21,6 @@ class Scoring
         'vtScore' => 0,
         'csScore' => 0,
         'blocklistScore' => 0,
-        'historyScore' => 0,
         'countryName' => 'N/A',
         'isp' => 'N/A',
         'usageType' => 'N/A',
@@ -238,7 +237,7 @@ class Scoring
                 ':vtScore' => $vtScore,
                 ':adbScore' => $adbScore,
                 ':blocklistScore' => $blocklistScore,
-                ':overall' => $this->sOverall,
+                ':overallScore' => $this->sOverall,
                 ':decision' => $decision
             ]);
         } else {
@@ -266,7 +265,7 @@ class Scoring
                 ':vtScore' => $vtScore,
                 ':adbScore' => $adbScore,
                 ':blocklistScore' => $blocklistScore,
-                ':overall' => $this->sOverall,
+                ':overallScore' => $this->sOverall,
                 ':decision' => $decision
             ]);
         }
