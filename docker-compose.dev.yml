@@ -18,7 +18,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: php-fpm-dev
+    container_name: php-fpm
     volumes:
       - ./argus:/var/www/html  # Mount source code for live editing
       - ./argus/vendor:/var/www/html/vendor  # Persist vendor directory
