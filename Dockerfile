@@ -35,7 +35,7 @@ RUN touch /var/log/ip-blocklist.log && chmod 666 /var/log/ip-blocklist.log
 
 # Generate blocklist if not exist
 RUN if [ ! -f "/var/www/html/blocklist/argus-ipsets.cdb" ]; then \
-        RUN /bin/bash /var/www/html/script/argus-blocklist.sh \
+        RUN /bin/bash /var/www/html/script/argus-blocklist.sh; \
     fi
 
 # Set permissions
