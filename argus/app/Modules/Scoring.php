@@ -20,6 +20,8 @@ class Scoring
         'abuseIpScore' => 0,
         'vtScore' => 0,
         'csScore' => 0,
+        'blocklistScore' => 0,
+        'historyScore' => 0,
         'countryName' => 'N/A',
         'isp' => 'N/A',
         'usageType' => 'N/A',
@@ -30,9 +32,11 @@ class Scoring
 
     public $vtWeight = 0.2;
 
-    public $crowdsecWeight = 0.4;
+    public $crowdsecWeight = 0.3;
     
     public $abuseIpWeight = 0.4;
+
+    public $blocklistWeight = 0.1;
 
     protected $histories = [];
 
@@ -140,6 +144,14 @@ class Scoring
             }
 
             $dataMapping['isPublic'] = checkIPType($this->reports['observable_name']);
+
+            $db = dba_open("/var/www/html/blocklist/argus-ipsets.cdb", "r", "cdb");
+            if ($db !== false) {
+            }
+
+            $foundCdb = dba_exists($this->reports['observable_name'], $db);
+            $dataMapping['blocklistScore'] = $foundCdb ? 100 : 0;
+            dba_close($db);
         }
 
         $this->dataMapping = $dataMapping;
@@ -198,6 +210,7 @@ class Scoring
         $vtScore = $this->dataMapping['vtScore'];
         $adbScore = $this->dataMapping['abuseIpScore'];
         $adbScore = $this->dataMapping['abuseIpScore'];
+        $blocklistScore = $this->dataMapping['blocklistScore'];
         $decision = json_encode($this->decision);
 
         if(count($this->histories) == 0) {
@@ -215,8 +228,8 @@ class Scoring
 
             $stmt2 = $db->prepare(
                 "INSERT INTO `tb_analysis_history` 
-                (`history_id_uuid`, `ip_id_uuid`, `crowdsec_score`, `vt_score`, `abuseip_score`, `overall_score`, `decision`) 
-                VALUES (:historyUuid, :uuid, :csScore, :vtScore, :adbScore, :overall, :decision)"
+                (`history_id_uuid`, `ip_id_uuid`, `crowdsec_score`, `vt_score`, `abuseip_score`, `blocklist_score`, `overall_score`, `decision`) 
+                VALUES (:historyUuid, :uuid, :csScore, :vtScore, :adbScore, :blocklistScore, :overallScore, :decision)"
             );
             $stmt2->execute([
                 ':historyUuid' => $historyUuid,
@@ -224,11 +237,13 @@ class Scoring
                 ':csScore' => $csScore,
                 ':vtScore' => $vtScore,
                 ':adbScore' => $adbScore,
+                ':blocklistScore' => $blocklistScore,
                 ':overall' => $this->sOverall,
                 ':decision' => $decision
             ]);
         } else {
             $uuid = $this->histories[0]['ip_id_uuid'];
+
 
             $stmt1 = $db->prepare("
                 UPDATE `tb_ip_address` SET `isp` = :isp, `classification` = :classification, `location` = :location, `updated_at` = now() WHERE ip_id_uuid = :uuid
@@ -241,8 +256,8 @@ class Scoring
             ]);
             $stmt2 = $db->prepare(
                 "INSERT INTO `tb_analysis_history` 
-                (`history_id_uuid`, `ip_id_uuid`, `crowdsec_score`, `vt_score`, `abuseip_score`, `overall_score`, `decision`) 
-                VALUES (:historyUuid, :uuid, :csScore, :vtScore, :adbScore, :overall, :decision)"
+                (`history_id_uuid`, `ip_id_uuid`, `crowdsec_score`, `vt_score`, `abuseip_score`, `blocklist_score`, `overall_score`, `decision`) 
+                VALUES (:historyUuid, :uuid, :csScore, :vtScore, :adbScore, :blocklistScore, :overallScore, :decision)"
             );
             $stmt2->execute([
                 ':historyUuid' => $historyUuid,
@@ -250,6 +265,7 @@ class Scoring
                 ':csScore' => $csScore,
                 ':vtScore' => $vtScore,
                 ':adbScore' => $adbScore,
+                ':blocklistScore' => $blocklistScore,
                 ':overall' => $this->sOverall,
                 ':decision' => $decision
             ]);
@@ -296,6 +312,7 @@ class Scoring
         // Calculate weighted final risk score
         $sOverall = $this->dataMapping['vtScore'] * $this->vtWeight +
                     $this->dataMapping['abuseIpScore'] * $this->abuseIpWeight +
+                    $this->dataMapping['blocklistScore'] * $this->blocklistWeight +
                     $this->dataMapping['csScore'] * $this->crowdsecWeight;
 
         if($this->recentHistory) {
