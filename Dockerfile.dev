@@ -57,9 +57,11 @@ chmod -R 755 /var/www/html\n\
 # Set log file ownership (but preserve permissions for writes)\n\
 chown www-data:www-data /var/log/ip-blocklist.log\n\
 \n\
-# Generate FireHOL blocklist\n\
+# Generate FireHOL blocklist if not exist\n\
 echo "Generate FireHOL blocklist."\n\
-/bin/bash /var/www/html/script/argus-blocklist.sh\n\
+if [ ! -f "/var/www/html/blocklist/argus-ipsets.cdb" ]; then\n\
+    /bin/bash /var/www/html/script/argus-blocklist.sh\n\
+fi\n\
 \n\
 echo "ARGUS Guard service initialization completed."\n\
 \n\
