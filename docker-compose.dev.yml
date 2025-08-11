@@ -50,7 +50,7 @@ services:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin-dev
     ports:
-      - "8089:8089"
+      - "8089:80"
     environment:
       PMA_HOST: mariadb
       PMA_PORT: 3306
