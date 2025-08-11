@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.3-fmp
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -11,35 +11,63 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Set working directory
 WORKDIR /var/www/html
 
-# Create cron log file with proper permissions
-RUN chmod 666 /var/www/html/logs/ip-blocklist.log
-
-# Create startup script
+# Create startup script that handles mounted volumes
 RUN echo '#!/bin/bash\n\
+set -e\n\
+\n\
+echo "Starting ARGUS Guard Service..."\n\
+\n\
+# Create application log files with proper permissions\n\
+touch /var/log/ip-blocklist.log\n\
+\n\
+# Set proper permissions for log files\n\
+chmod 666 /var/log/ip-blocklist.log\n\
+\n\
+# Create nginx log files with proper permissions\n\
+mkdir /var/log/nginx\n\
+touch /var/log/nginx/argus_access.log\n\
+touch /var/log/nginx/argus_error.log\n\
+touch /var/log/nginx/argus_security.log\n\
+chmod 666 /var/log/nginx/*.log\n\
+chown www-data:www-data /var/log/nginx/*.log\n\
+\n\
 # Install/update composer dependencies if needed\n\
 if [ -f "/var/www/html/composer.json" ]; then\n\
+    echo "Installing/updating composer dependencies..."\n\
     composer install --no-dev --optimize-autoloader\n\
 fi\n\
 \n\
 # Set up cron if cron file exists\n\
-if [ -f "/var/www/html/script/blocklist-cron" ]; then\n\
-    cp /var/www/html/script/blocklist-cron /etc/cron.d/blocklist-cron\n\
+if [ -f "/var/www/html/cron/blocklist-cron" ]; then\n\
+    echo "Setting up cron jobs..."\n\
+    cp /var/www/html/cron/blocklist-cron /etc/cron.d/blocklist-cron\n\
     chmod 0644 /etc/cron.d/blocklist-cron\n\
     crontab /etc/cron.d/blocklist-cron\n\
 fi\n\
 \n\
-# Set permissions\n\
+# Set proper ownership for web files\n\
 chown -R www-data:www-data /var/www/html\n\
 chmod -R 755 /var/www/html\n\
 \n\
+# Set log file ownership (but preserve permissions for writes)\n\
+chown www-data:www-data /var/log/ip-blocklist.log\n\
+\n\
+echo "ARGUS Guard service initialization completed."\n\
+\n\
 # Start services\n\
-cron && php-fpm\n\
+echo "Starting cron daemon..."\n\
+cron\n\
+\n\
+echo "Starting PHP-FPM..."\n\
+exec php-fmp\n\
 ' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
 
 CMD ["/usr/local/bin/start.sh"]
