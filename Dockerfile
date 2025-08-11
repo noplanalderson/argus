@@ -33,6 +33,8 @@ RUN if [ -f "/var/www/html/cron/blocklist-cron" ]; then \
 # Create log files
 RUN touch /var/log/ip-blocklist.log && chmod 666 /var/log/ip-blocklist.log
 
+RUN /bin/bash /var/www/html/script/argus-blocklist.sh
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
