@@ -3,7 +3,7 @@ version: '3.8'
 services:
   nginx:
     image: nginx:alpine
-    container_name: nginx
+    container_name: nginx-prod
     ports:
       - "8088:8088"
     volumes:
@@ -12,18 +12,20 @@ services:
       - php-fpm
     networks:
       - app-network
+    restart: unless-stopped
 
   php-fpm:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: php-fpm
+    container_name: php-fpm-prod
     networks:
       - app-network
+    restart: unless-stopped
 
   mariadb:
     image: mariadb:latest
-    container_name: mariadb
+    container_name: mariadb-prod
     ports:
       - "3306:3306"
     environment:
@@ -36,9 +38,10 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - app-network
+    restart: unless-stopped
 
 volumes:
-  mariadb_data:
+  mariadb_data_prod:
 
 networks:
   app-network:

@@ -1,0 +1,45 @@
+FROM php:8.3-fpm
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    cron \
+    libcurl4-openssl-dev \
+    wget \
+    && docker-php-ext-install mysqli pdo_mysql curl dba \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Create cron log file with proper permissions
+RUN chmod 666 /var/www/html/logs/ip-blocklist.log
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+# Install/update composer dependencies if needed\n\
+if [ -f "/var/www/html/composer.json" ]; then\n\
+    composer install --no-dev --optimize-autoloader\n\
+fi\n\
+\n\
+# Set up cron if cron file exists\n\
+if [ -f "/var/www/html/script/blocklist-cron" ]; then\n\
+    cp /var/www/html/script/blocklist-cron /etc/cron.d/blocklist-cron\n\
+    chmod 0644 /etc/cron.d/blocklist-cron\n\
+    crontab /etc/cron.d/blocklist-cron\n\
+fi\n\
+\n\
+# Set permissions\n\
+chown -R www-data:www-data /var/www/html\n\
+chmod -R 755 /var/www/html\n\
+\n\
+# Start services\n\
+cron && php-fpm\n\
+' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
+
+CMD ["/usr/local/bin/start.sh"]

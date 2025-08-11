@@ -29,14 +29,21 @@ class CheckIP
         $stmt->execute([$this->ip]);
         $history = $stmt->fetch();
 
-        if ($history && isset($history['decision'])) {
-            $history['decision'] = json_decode($history['decision'], true);
-
-            if($history['decision']['blockmode'] !== false) {
-                $result = [
-                    'already_analyzed' => true,
-                    'blockmode' => $history['decision']['blockmode']
-                ];
+        if(!empty($history['history_id_uuid']))
+        {
+            $lastAnalysis = strtotime($history['created_at']);
+            $lastAnalysis = (time() - $lastAnalysis) < (3 * 86400);
+    
+            if ($lastAnalysis && isset($history['decision'])) {
+                $history['decision'] = json_decode($history['decision'], true);
+    
+                if($history['decision']['blockmode'] !== false) {
+                    $result = [
+                        'last_analyze' => $history['created_at'],
+                        'already_analyzed' => $lastAnalysis,
+                        'blockmode' => $history['decision']['blockmode']
+                    ];
+                }
             }
         }
 

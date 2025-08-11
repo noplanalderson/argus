@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS tb_analysis_history (
     crowdsec_score FLOAT NOT NULL,
     vt_score FLOAT NOT NULL,
     abuseip_score FLOAT NOT NULL,
+    blocklist_score FLOAT NOT NULL,
+    historical_score FLOAT NOT NULL,
     overall_score FLOAT NOT NULL,
     decision JSON NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

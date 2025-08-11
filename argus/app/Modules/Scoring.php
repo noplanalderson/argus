@@ -88,10 +88,10 @@ class Scoring
             $dataMapping = $this->dataMapping;
             foreach ($this->reports['analyzer_reports'] as $ti) {
                 if($ti['name'] == 'AbuseIPDB' && $ti['status'] == 'SUCCESS') {
-                    $dataMapping['abuseIpScore'] = $ti['report']['data']['abuseConfidenceScore'];
-                    $dataMapping['countryName'] = $ti['report']['data']['countryName'];
-                    $dataMapping['isp'] = $ti['report']['data']['isp'];
-                    $dataMapping['usageType'] = $ti['report']['data']['usageType'];
+                    $dataMapping['abuseIpScore'] = $ti['report']['data']['abuseConfidenceScore'] ?? 0;
+                    $dataMapping['countryName'] = $ti['report']['data']['countryName'] ?? 'N/A';
+                    $dataMapping['isp'] = $ti['report']['data']['isp'] ?? 'N/A';
+                    $dataMapping['usageType'] = $ti['report']['data']['usageType'] ?? 'N/A';
 
                     $categories = [];
                     foreach ($ti['report']['categories_found'] as $key => $value) {
@@ -113,15 +113,15 @@ class Scoring
                     }
 
                     if(empty($ti['report']['data']['countryName'])) {
-                        $dataMapping['isp'] = $ti['report']['as_name'];
+                        $dataMapping['isp'] = $ti['report']['as_name'] ?? 'N/A';
                     }
 
                     if(empty($ti['report']['data']['usageType'])) {
-                        $dataMapping['countryName'] = $ti['report']['location']['city'];
+                        $dataMapping['countryName'] = $ti['report']['location']['city'] ?? 'N/A';
                     }
 
                     $dataMapping = array_merge($dataMapping, [
-                        'csScore' => $this->__csScoring($ti['report']['scores']['overall']['total']),
+                        'csScore' => $this->__csScoring($ti['report']['scores']['overall']['total'] ?? 0),
                         'csClassifications' => $classification
                     ]);
                 }
@@ -129,10 +129,10 @@ class Scoring
                 if($ti['name'] == 'VirusTotal_v3_Get_Observable' && $ti['status'] == 'SUCCESS') {
                     $vtStats = $ti['report']['data']['attributes']['last_analysis_stats'];
                     $vtVotes = $ti['report']['data']['attributes']['total_votes']['malicious'];
-                    $countSuspicious = $vtStats['suspicious'];
-                    $countMalicious = $vtStats['malicious'];
-                    $countHarmless = $vtStats['harmless'];
-                    $countUndetected = $vtStats['undetected'];
+                    $countSuspicious = $vtStats['suspicious'] ?? 0;
+                    $countMalicious = $vtStats['malicious'] ?? 0;
+                    $countHarmless = $vtStats['harmless'] ?? 0;
+                    $countUndetected = $vtStats['undetected'] ?? 0;
                     $countTotal = $countSuspicious + $countMalicious + $countHarmless + $countUndetected;
             
                     $dataMapping['vtScore'] = $this->__vtScoring($countMalicious, $countSuspicious, $countUndetected, $vtVotes, $countTotal);

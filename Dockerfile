@@ -4,9 +4,14 @@ FROM php:8.3-fpm
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    && docker-php-ext-install mysqli pdo_mysql \
+    cron \
+    libcurl4-openssl-dev \
+    wget \
+    && docker-php-ext-install mysqli pdo_mysql curl dba \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -14,11 +19,24 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # Set working directory
 WORKDIR /var/www/html
 
-COPY ./microservices /var/www/html
+# Copy application code
+COPY ./argus /var/www/html
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
+# Set up cron
+RUN if [ -f "/var/www/html/cron/blocklist-cron" ]; then \
+        cp /var/www/html/script/blocklist-cron /etc/cron.d/blocklist-cron && \
+        chmod 0644 /etc/cron.d/blocklist-cron && \
+        crontab /etc/cron.d/blocklist-cron; \
+    fi
+
+# Create log files
+RUN touch /var/log/ip-blocklist.log && chmod 666 /var/log/ip-blocklist.log
+
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
+
+CMD cron && php-fpm
