@@ -13,13 +13,13 @@ umask 007
 
 # Configuration variables
 BASE_DIR="/var/www/html/"
-LOG_FILE="${BASE_DIR}/logs/ip-blocklist.log"
+LOG_FILE="/var/log/ip-blocklist.log"
 LOCK_FILE="/var/run/lock/ip-blocklist.lock"
 LISTS_DIR="${BASE_DIR}/blocklist"
 ARGUS_IPSET="${LISTS_DIR}/argus-ipsets.ipset"
 ARGUS_CDB="${LISTS_DIR}/argus-ipsets.cdb"
 CONVERTER_SCRIPT="${BASE_DIR}/script/argusip-converter.php"
-PHP_PATH="/usr/bin/php"
+PHP_PATH=$(command -v php)
 MAX_LOG_SIZE=512000
 FIREHOL_REPO="https://raw.githubusercontent.com/firehol/blocklist-ipsets/master"
 
