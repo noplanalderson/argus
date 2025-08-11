@@ -42,7 +42,7 @@ dev-logs:
 	docker compose -f docker-compose.dev.yml logs -f
 
 dev-shell:
-	docker compose -f docker-compose.dev.yml exec php-fmp bash
+	docker compose -f docker-compose.dev.yml exec php-fpm bash
 
 # Production environment
 prod-build:
@@ -62,10 +62,10 @@ prod-logs:
 
 # Utility commands
 composer-install:
-	docker compose -f docker-compose.dev.yml exec php-fmp composer install
+	docker compose -f docker-compose.dev.yml exec php-fpm composer install
 
 composer-update:
-	docker compose -f docker-compose.dev.yml exec php-fmp composer update
+	docker compose -f docker-compose.dev.yml exec php-fpm composer update
 
 db-backup:
 	docker compose -f docker-compose.dev.yml exec mariadb mysqldump -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} > ./database/backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
@@ -84,4 +84,4 @@ monitor:
 	docker compose -f docker-compose.dev.yml logs --tail=50
 	@echo ""
 	@echo "=== Threat Analysis Logs ==="
-	docker compose -f docker-compose.dev.yml exec php-fmp tail -f /var/log/ip-blocklist.log
+	docker compose -f docker-compose.dev.yml exec php-fpm tail -f /var/log/ip-blocklist.log
