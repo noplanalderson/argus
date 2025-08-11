@@ -64,7 +64,7 @@ echo "Starting cron daemon..."\n\
 cron\n\
 \n\
 echo "Starting PHP-FPM..."\n\
-exec php-fmp\n\
+exec php-fpm\n\
 ' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
 
 CMD ["/usr/local/bin/start.sh"]
