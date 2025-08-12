@@ -131,11 +131,11 @@ class HashScoring
         $this->overallScore = $this->dataMapping['vtScore'] * $this->vtWheight +
                     $this->dataMapping['mbScore'] * $this->mbWeight +
                     $this->dataMapping['yaraScore'] * $this->yaraWeight;
-
+        $scores = round($this->overallScore, 0);
         return [
-            'scores' => round($this->overallScore, 2),
+            'scores' => $scores,
             'hash' => $this->reports['observable_name'],
-            'description' => "Hash analysis based on multiple threat intelligence (Scores {$this->overallScore})",
+            'description' => "Hash analysis based on multiple threat intelligence (Scores {$scores})",
             'reference' => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/raw/analyzer',
             'data' => array_merge(
                 $this->dataMapping,
