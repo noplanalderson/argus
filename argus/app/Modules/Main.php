@@ -84,40 +84,6 @@ class Main
                         'results' => $results
                     ], 200);
                     break;
-
-                case 'upload_report':
-                    // File lokal yang akan diunggah (misalnya hasil upload dari form HTML)
-                    $localFilePath = $_FILES['excel_file']['tmp_name'];
-                    $originalName  = basename($_FILES['excel_file']['name']);
-
-                    // Lokasi tujuan di Nextcloud
-                    $remoteFilePath = $_ENV['NEXTCLOUD_URL'] . $_ENV['NEXTCLOUD_DIR'] . '/' . rawurlencode($originalName);
-
-                    // Inisialisasi CURL untuk WebDAV PUT
-                    $fp = fopen($localFilePath, 'r');
-                    $ch = curl_init();
-
-                    curl_setopt($ch, CURLOPT_URL, $remoteFilePath);
-                    curl_setopt($ch, CURLOPT_USERPWD, "{$_ENV['NEXTCLOUD_USER']}:{$_ENV['NEXTCLOUD_PWD']}");
-                    curl_setopt($ch, CURLOPT_PUT, true);
-                    curl_setopt($ch, CURLOPT_INFILE, $fp);
-                    curl_setopt($ch, CURLOPT_INFILESIZE, filesize($localFilePath));
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-                    $response = curl_exec($ch);
-                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                    $error    = curl_error($ch);
-
-                    curl_close($ch);
-                    fclose($fp);
-                    setJSON([
-                        'code' => $httpCode,
-                        'error' => $error,
-                        'message' => "Ok",
-                        'results' => $response,
-                        'file' => $originalName
-                    ], $httpCode);
-                    break;
                 
                 case 'action':
                     $post = $this->request->post();
@@ -165,14 +131,16 @@ class Main
                     setJSON([
                         'code' => 200,
                         'error' => null,
-                        'title' => "Microservice Decision",
-                        'description' => "Microservice to calculate IP scores from Multiple-Source Threat Intelligence Platforms and Performing Active Response with Automatic Blocking to Sangfor NGFW or Mikrotik",
+                        'title' => "ARGUS Guard",
+                        'description' => "Argus (Automated Reputation-based Global Untrusted Source-blocker) based on Multiple Threat Intelligence Source and Blocklist with Automatic Blocking to Sangfor NGFW or Mikrotik",
                         'author' => "Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>",
-                        'version' => "1.0",
+                        'version' => "1.0.0",
                         'availablePath' => [
                             '[GET] /home',
                             '[POST] /analyze',
-                            '[POST] /action'
+                            '[POST] /action',
+                            '[POST] /yeti',
+                            '[POST] /yeti_add',
                         ]
                     ], 200);
                     break;

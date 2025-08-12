@@ -29,3 +29,17 @@ function setJSON($data, $statusCode = 200)
     // You may want to send a JSON response here, for example:
     $res->setJSON($data, $statusCode);
 }
+
+function is_sha1(string $string): bool
+{
+    // Check if the length is 40 characters
+    if (strlen($string) === 40) {
+        // Check if the string contains only hexadecimal characters
+        // ctype_xdigit() checks for hexadecimal digits
+        if (ctype_xdigit($string)) {
+            return true;
+        }
+    }
+
+    return false; 
+}

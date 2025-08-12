@@ -6,7 +6,7 @@ use Ramsey\Uuid\Uuid;
  * Scoring Engine Class
  * Calculate overall IP's score based on Multiple-Source Threat Intelligence Platform
  * 
- * @package Mikroservices Decision
+ * @package Argus Service
  * @author  Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>
  * @since 2025
  * @version 1.0
@@ -146,10 +146,10 @@ class Scoring
 
             $db = dba_open("/var/www/html/blocklist/argus-ipsets.cdb", "r", "cdb");
             if ($db !== false) {
+                $foundCdb = dba_exists($this->reports['observable_name'], $db);
+                $dataMapping['blocklistScore'] = $foundCdb ? 100 : 0;
             }
 
-            $foundCdb = dba_exists($this->reports['observable_name'], $db);
-            $dataMapping['blocklistScore'] = $foundCdb ? 100 : 0;
             dba_close($db);
         }
 
