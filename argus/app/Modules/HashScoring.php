@@ -23,11 +23,11 @@ class HashScoring
         'classification' => []
     ];
 
-    protected $vtWheight = 0.4;
+    protected $vtWeight = 0.3;
 
-    protected $mbWeight = 0.25;
+    protected $mbWeight = 0.3;
 
-    protected $malprobeWeight = 0.2;
+    protected $malprobeWeight = 0.25;
 
     protected $yaraWeight = 0.15;
 
@@ -128,7 +128,7 @@ class HashScoring
     {
         $this->__scoring($this->reports);
 
-        $this->overallScore = $this->dataMapping['vtScore'] * $this->vtWheight +
+        $this->overallScore = $this->dataMapping['vtScore'] * $this->vtWeight +
                     $this->dataMapping['mbScore'] * $this->mbWeight +
                     $this->dataMapping['yaraScore'] * $this->yaraWeight;
         $scores = round($this->overallScore, 0);
