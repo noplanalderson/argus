@@ -106,7 +106,7 @@ class HashScoring
                         $mbScoring = new MalwareBazaarScoring();
                         $mbScore = $mbScoring->calculateFinalScore($ti['report']['data']);
                         $this->dataMapping['mbScore'] = $this->__normalizeScores($mbScore['final_score'], 1);
-                        $classification['malware_bazaar'] = $ti['report']['data']['tags'];
+                        $classification['malware_bazaar'] = $ti['report']['data'][0]['tags'];
                     }
                 }
             }
