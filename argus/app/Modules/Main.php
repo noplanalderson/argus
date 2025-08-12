@@ -70,12 +70,21 @@ class Main
                 case 'analyze':
                     $jobId = $this->request->post('job_id');
                     $firedTimes = $this->request->post('firedtimes');
+                    $type = $this->request->post('type');
                     $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
                     $results = [];
                     if($threatIntelResult['status']) {
-                        $scoring = new \App\Modules\Scoring($threatIntelResult['data'], $firedTimes);
-                        $extract = $scoring->extractData();
-                        $results = $extract->run();
+                        if($type === 'ip')
+                        {
+                            $scoring = new \App\Modules\Scoring($threatIntelResult['data'], $firedTimes);
+                            $extract = $scoring->extractData();
+                            $results = $extract->run();
+                        }
+                        else 
+                        {
+                            $scoring = new \App\Modules\HashScoring($threatIntelResult['data']);
+                            $results = $scoring->run();
+                        }
                     }
                     setJSON([
                         'code' => 200,
