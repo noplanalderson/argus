@@ -12,8 +12,8 @@ class VirusTotalScoring
         // Bobot disesuaikan agar total = 1.0
         $this->weights = [
             'detection_rate'  => 0.4,  // 40%
-            'reputation'      => 0.25, // 25%
-            'sandbox_verdict' => 0.35  // 35%
+            'reputation'      => 0.3, // 30%
+            'sandbox_verdict' => 0.3  // 30%
         ];
     }
 
