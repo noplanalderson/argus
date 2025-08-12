@@ -105,8 +105,16 @@ class HashScoring
                     {
                         $mbScoring = new MalwareBazaarScoring();
                         $mbScore = $mbScoring->calculateFinalScore($ti['report']['data']);
-                        $this->dataMapping['mbScore'] = $this->__normalizeScores($mbScore['final_score'], 1);
+                        $this->dataMapping['mbScore'] = round($mbScore['final_score'] * 100, 2);
                         $classification['malware_bazaar'] = $ti['report']['data'][0]['tags'];
+                    }
+                }
+
+                if($ti['name'] == 'Malprob' && $ti['status'] == 'SUCCESS') 
+                {
+                    if(!empty($ti['report']))
+                    {
+                        $this->dataMapping['malprobeScore'] = round($ti['report']['score'] * 100, 2);
                     }
                 }
             }
@@ -124,7 +132,7 @@ class HashScoring
                     $this->dataMapping['yaraScore'] * $this->yaraWeight;
 
         return [
-            'scores' => $this->overallScore,
+            'scores' => round($this->overallScore, 2),
             'hash' => $this->reports['observable_name'],
             'description' => "Hash analysis based on multiple threat intelligence (Scores {$this->overallScore})",
             'reference' => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/raw/analyzer',
