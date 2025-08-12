@@ -95,7 +95,7 @@ class HashScoring
 
                         $yaraScore = ($clamav * $clamavWeight) + ($yaraCommunity * $yaraWeight);
                         $this->dataMapping['yaraScore'] = $this->__normalizeScores($yaraScore, 1);
-                        $classification['yara'][] = $task['clamav_results'] ?? ($task['static_results'][0]['rule_name'] ?? 'Unknown');
+                        $classification['yara'] = $task['clamav_results'] ?? ($task['static_results'][0]['rule_name'] ?? 'Unknown');
                     }
                 }
 
@@ -104,7 +104,7 @@ class HashScoring
                     if(!empty($ti['report']['data']))
                     {
                         $mbScoring = new MalwareBazaarScoring();
-                        $mbScore = $mbScoring->calculateFinalScore($ti['report']['data']);
+                        $mbScore = $mbScoring->calculateFinalScore($ti);
                         $this->dataMapping['mbScore'] = round($mbScore['final_score'] * 100, 2);
                         $classification['malware_bazaar'] = $ti['report']['data'][0]['tags'];
                     }
@@ -115,6 +115,7 @@ class HashScoring
                     if(!empty($ti['report']))
                     {
                         $this->dataMapping['malprobeScore'] = round($ti['report']['score'] * 100, 2);
+                        $classification['malprobe'] = "{$ti['report']['label']} - {$ti['report']['type']}";
                     }
                 }
             }
