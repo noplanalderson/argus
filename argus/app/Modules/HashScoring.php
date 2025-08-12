@@ -23,13 +23,13 @@ class HashScoring
         'classification' => []
     ];
 
-    protected $vtWeight = 0.3;
+    protected $vtWeight = 0.35;
 
-    protected $mbWeight = 0.3;
+    protected $mbWeight = 0.25;
 
-    protected $malprobeWeight = 0.25;
+    protected $malprobeWeight = 0.3;
 
-    protected $yaraWeight = 0.15;
+    protected $yaraWeight = 0.2;
 
     protected $overallScore = 0;
 
