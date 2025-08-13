@@ -82,7 +82,7 @@ class OpenCTI
             'headers' => $this->headers,
             'body' => json_encode($this->buildRequest())
         ];
-        $res = $this->client->request('POST', '/graphql', $params);
+        $res = $this->request('POST', '/graphql', $params);
         if(!$res['status']) {
             return ['status' => false, 'code' => $res['code'], 'message' => 'Failed to get observable data', 'data' => []];
         } else {
