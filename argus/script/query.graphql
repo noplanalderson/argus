@@ -1,0 +1,98 @@
+query StixCyberObservablesLinesPaginationQuery($types: [String], $search: String, $count: Int!, $cursor: ID, $orderBy: StixCyberObservablesOrdering, $orderMode: OrderingMode, $filters: FilterGroup) {
+  ...StixCyberObservablesLines_data_4GmerJ
+}
+
+fragment StixCyberObservableLine_node on StixCyberObservable {
+  __isStixCyberObservable: __typename
+  id
+  entity_type
+  parent_types
+  observable_value
+  created_at
+  draftVersion {
+    draft_id
+    draft_operation
+  }
+  createdBy {
+    __typename
+    __isIdentity: __typename
+    id
+    name
+    entity_type
+  }
+  ... on IPv4Addr {
+    countries {
+      edges {
+        node {
+          name
+          x_opencti_aliases
+          id
+        }
+      }
+    }
+  }
+  ... on IPv6Addr {
+    countries {
+      edges {
+        node {
+          name
+          x_opencti_aliases
+          id
+        }
+      }
+    }
+  }
+  objectMarking {
+    id
+    definition
+    x_opencti_order
+    x_opencti_color
+  }
+  objectLabel {
+    id
+    value
+    color
+  }
+  creators {
+    id
+    name
+  }
+}
+
+fragment StixCyberObservablesLines_data_4GmerJ on Query {
+  stixCyberObservables(
+    types: $types
+    search: $search
+    first: $count
+    after: $cursor
+    orderBy: $orderBy
+    orderMode: $orderMode
+    filters: $filters
+  ) {
+    edges {
+      node {
+        __typename
+        id
+        standard_id
+        entity_type
+        observable_value
+        created_at
+        x_opencti_score
+        x_opencti_description
+        objectMarking {
+          id
+          definition
+          x_opencti_order
+          x_opencti_color
+        }
+        ...StixCyberObservableLine_node
+      }
+      cursor
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+      globalCount
+    }
+  }
+}

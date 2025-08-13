@@ -42,8 +42,14 @@ class OpenCTI
 
     private function buildRequest()
     {
+        $path = ROOTPATH . '/script/query.graphql';
+        if (!file_exists($path)) {
+            throw new \RuntimeException("Query file not found: " . $path);
+        }
+        $query = trim(file_get_contents($path));
+
         return [
-            "query" => "query StixCyberObservablesLinesPaginationQuery(\$types: [String], \$search: String, \$count: Int!, \$cursor: ID, \$orderBy: StixCyberObservablesOrdering, \$orderMode: OrderingMode, \$filters: FilterGroup) {\n  ...StixCyberObservablesLines_data_4GmerJ\n}\n\nfragment StixCyberObservableLine_node on StixCyberObservable {\n  __isStixCyberObservable: __typename\n  id\n  entity_type\n  parent_types\n  observable_value\n  created_at\n  draftVersion {\n    draft_id\n    draft_operation\n  }\n  createdBy {\n    __typename\n    __isIdentity: __typename\n    id\n    name\n    entity_type\n  }\n  ... on IPv4Addr {\n    countries {\n      edges {\n        node {\n          name\n          x_opencti_aliases\n          id\n        }\n      }\n    }\n  }\n  ... on IPv6Addr {\n    countries {\n      edges {\n        node {\n          name\n          x_opencti_aliases\n          id\n        }\n      }\n    }\n  }\n  objectMarking {\n    id\n    definition\n    x_opencti_order\n    x_opencti_color\n  }\n  objectLabel {\n    id\n    value\n    color\n  }\n  creators {\n    id\n    name\n  }\n}\n\nfragment StixCyberObservablesLines_data_4GmerJ on Query {\n  stixCyberObservables(\n    types: \$types\n    search: \$search\n    first: \$count\n    after: \$cursor\n    orderBy: \$orderBy\n    orderMode: \$orderMode\n    filters: \$filters\n  ) {\n    edges {\n      node {\n        __typename\n        id\n        standard_id\n        entity_type\n        observable_value\n        created_at\n        x_opencti_score\n        x_opencti_description\n        objectMarking {\n          id\n          definition\n          x_opencti_order\n          x_opencti_color\n        }\n        ...StixCyberObservableLine_node\n      }\n      cursor\n    }\n    pageInfo {\n      endCursor\n      hasNextPage\n      globalCount\n    }\n  }\n}",
+            "query" => $query,
             "variables" => [
                 "count" => 1,
                 "search" => $this->observable,
