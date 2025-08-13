@@ -84,11 +84,17 @@ class Main
                     }
                     else 
                     {
+                        $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
                         if(!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
                             $scoring = new \App\Modules\OpenCTI($hash);
                             $results = $scoring->run();
+                            if($results['status'] === false) {
+                                if($threatIntelResult['status']) {
+                                    $scoring = new \App\Modules\HashScoring($threatIntelResult['data']);
+                                    $results = $scoring->run();
+                                }
+                            }
                         } else {
-                            $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
                             if($threatIntelResult['status']) {
                                 $scoring = new \App\Modules\HashScoring($threatIntelResult['data']);
                                 $results = $scoring->run();
