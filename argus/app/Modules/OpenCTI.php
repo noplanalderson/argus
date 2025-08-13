@@ -97,7 +97,7 @@ class OpenCTI
         $this->status = $opencti['status'];
         if($this->status === true) {
             $this->data = $opencti['data'];
-            $data = $this->data['data']['stixCyberObservables']['edges'][0]['node'];
+            $data = $this->data['data']['stixCyberObservables']['edges'][0]['node'] ?? [];
             if(!empty($data)) {
                 foreach ($data['objectLabel'] as $value) {
                     $this->dataMapping['classification'][$data['createdBy']['name']][] = $value['value'];

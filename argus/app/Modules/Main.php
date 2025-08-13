@@ -88,7 +88,7 @@ class Main
                         if(!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
                             $scoring = new \App\Modules\OpenCTI($hash);
                             $results = $scoring->run();
-                            if($results['status'] === false) {
+                            if($results['status'] === false || !empty($results['opencti']['errors'])) {
                                 if($threatIntelResult['status']) {
                                     $scoring = new \App\Modules\HashScoring($threatIntelResult['data']);
                                     $results = $scoring->run();
