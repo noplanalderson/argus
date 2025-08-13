@@ -125,7 +125,7 @@ class OpenCTI
             ':yara_score' => null,
             ':opencti_score' => $this->dataMapping['opencti_score'],
             ':overall_score' => $this->dataMapping['opencti_score'],
-            ':decision' => $this->decision
+            ':decision' => json_encode($this->decision)
         ]);
     }
 
