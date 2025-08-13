@@ -72,21 +72,24 @@ class Main
                     $firedTimes = $this->request->post('firedtimes');
                     $hash = $this->request->post('hash');
                     $type = $this->request->post('type');
-                    $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
                     $results = [];
-                    if($threatIntelResult['status']) {
-                        if($type === 'ip')
-                        {
+                    if($type === 'ip')
+                    {
+                        $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
+                        if($threatIntelResult['status']) {
                             $scoring = new \App\Modules\Scoring($threatIntelResult['data'], $firedTimes);
                             $extract = $scoring->extractData();
                             $results = $extract->run();
                         }
-                        else 
-                        {
-                            if(!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
-                                $scoring = new \App\Modules\OpenCTI($hash);
-                                $results = $scoring->run();
-                            } else {
+                    }
+                    else 
+                    {
+                        if(!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
+                            $scoring = new \App\Modules\OpenCTI($hash);
+                            $results = $scoring->run();
+                        } else {
+                            $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
+                            if($threatIntelResult['status']) {
                                 $scoring = new \App\Modules\HashScoring($threatIntelResult['data']);
                                 $results = $scoring->run();
                             }

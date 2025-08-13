@@ -78,7 +78,7 @@ class OpenCTI
         if ($res->getStatusCode() == 200) {
             $data = json_decode($res->getBody()->getContents(), true);
             return ['status' => true, 'code' => $res->getStatusCode(), 'data' => $data];
-        } 
+        }
         return ['status' => false, 'code' => $res->getStatusCode(), 'data' => []];
     }
 
@@ -88,12 +88,7 @@ class OpenCTI
             'headers' => $this->headers,
             'body' => json_encode($this->buildRequest())
         ];
-        $res = $this->request('POST', '/graphql', $params);
-        if(!$res['status']) {
-            return ['status' => false, 'code' => $res['code'], 'message' => 'Failed to get observable data', 'data' => []];
-        } else {
-            return ['status' => true, 'code' => $res['code'], 'message' => 'Ok', 'data' => $res['data']];
-        }
+        return $this->request('POST', '/graphql', $params);
     }
 
     private function __scoring()
@@ -115,10 +110,10 @@ class OpenCTI
 
     }
 
-    private function _saveResults()
+    private function __saveResults()
     {
         $db = (new Database())->getConnection();
-        
+
         $uuid   = Uuid::uuid7()->toString();
 
         $stmt = $db->prepare("INSERT INTO `tb_file_hash` (
@@ -143,8 +138,8 @@ class OpenCTI
 
     public function run()
     {
-
-        $this->_saveResults();
+        $this->__scoring();
+        $this->__saveResults();
 
         return [
             'status' => $this->status,
