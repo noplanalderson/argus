@@ -110,16 +110,16 @@ class OpenCTI
         $uuid   = Uuid::uuid7()->toString();
 
         $stmt = $db->prepare("INSERT INTO `tb_file_hash` (
-                    `hash_id`, `file_hash`, `observable_name`, `classification`, `malproble_score`,
+                    `hash_id`, `file_hash`, `observable_name`, `classification`, `malprobe_score`,
                     `vt_score`, `mb_score`, `yara_score`, `opencti_score`, `overall_score`, `decision`) VALUES
-                    (:hash_id, :file_hash, :observable_name, :classification, :malproble_score,
+                    (:hash_id, :file_hash, :observable_name, :classification, :malprobe_score,
                     :vt_score, :mb_score, :yara_score, :opencti_score, :overall_score, :decision)");
         $stmt->execute([
             ':hash_id' => $uuid,
             ':file_hash' => $this->observable,
             ':observable_name' => $this->observable,
             ':classification' => json_encode($this->dataMapping['classification']),
-            ':malproble_score' => null,
+            ':malprobe_score' => null,
             ':vt_score' => null,
             ':mb_score' => null,
             ':yara_score' => null,
