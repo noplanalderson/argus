@@ -124,6 +124,32 @@ class HashScoring
         }
     }
 
+    private function _saveResults()
+    {
+        $db = (new Database())->getConnection();
+        
+        $uuid   = Uuid::uuid7()->toString();
+
+        $stmt = $db->prepare("INSERT INTO `tb_file_hash` (
+                    `hash_id`, `file_hash`, `observable_name`, `classification`, `malproble_score`,
+                    `vt_score`, `mb_score`, `yara_score`, `opencti_score`, `overall_score`, `decision`) VALUES
+                    (:hash_id, :file_hash, :observable_name, :classification, :malproble_score,
+                    :vt_score, :mb_score, :yara_score, :opencti_score, :overall_score, :decision)");
+        $stmt->execute([
+            ':hash_id' => $uuid,
+            ':file_hash' => $this->reports['file_hash'],
+            ':observable_name' => $this->reports['observable_name'],
+            ':classification' => json_encode($this->dataMapping['classification']),
+            ':malproble_score' => $this->dataMapping['malprobeScore'],
+            ':vt_score' => $this->dataMapping['vtScore'],
+            ':mb_score' => $this->dataMapping['mbScore'],
+            ':yara_score' => $this->dataMapping['yaraScore'],
+            ':opencti_score' => null,
+            ':overall_score' => $this->overallScore,
+            ':decision' => $this->decision
+        ]);
+    }
+
     public function run()
     {
         $this->__scoring($this->reports);
@@ -132,11 +158,14 @@ class HashScoring
                     $this->dataMapping['mbScore'] * $this->mbWeight +
                     $this->dataMapping['yaraScore'] * $this->yaraWeight;
         $scores = round($this->overallScore, 0);
+
+        $this->_saveResults();
+
         return [
             'scores' => $scores,
             'hash' => $this->reports['observable_name'],
             'description' => "Hash analysis based on multiple threat intelligence (Scores {$scores})",
-            'reference' => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/raw/analyzer',
+            'reference' => "{$_ENV['INTELOWL_URL']}/jobs/{$this->reports['id']}/raw/analyzer",
             'data' => array_merge(
                 $this->dataMapping,
                 ['decision' => $this->decision]

@@ -300,7 +300,7 @@ class Scoring
                 'firedTimes'   => $this->firedTimes,
                 'ipaddress'    => $this->reports['observable_name'],
                 'description'  => 'This IP was recently analyzed within the last 3 days.',
-                'reference'    => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/visualizer/Reputation',
+                'reference'    => "{$_ENV['INTELOWL_URL']}/jobs/{$this->reports['id']}/visualizer/Reputation",
                 'data'         => array_merge(
                                     $this->dataMapping,
                                     ['decision' => $this->recentHistory['decision'] ?? ['notification' => true, 'abuse_report' => true]]
@@ -330,7 +330,7 @@ class Scoring
             'firedTimes'   => $this->firedTimes,
             'ipaddress' => $this->reports['observable_name'],
             'description' => "IP analysis based on multiple threat intelligence (Scores {$this->sOverall})",
-            'reference' => 'http://172.16.9.148/jobs/'.$this->reports['id'].'/visualizer/Reputation',
+            'reference' => "{$_ENV['INTELOWL_URL']}/jobs/{$this->reports['id']}/visualizer/Reputation",
             'data' => array_merge(
                 $this->dataMapping,
                 ['decision' => $this->decision]

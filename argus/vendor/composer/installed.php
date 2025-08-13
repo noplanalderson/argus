@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'mrnaeem/argus',
-        'pretty_version' => '1.1.0',
-        'version' => '1.1.0.0',
+        'pretty_version' => '1.2.0',
+        'version' => '1.2.0.0',
         'reference' => null,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
@@ -65,8 +65,8 @@
             'dev_requirement' => false,
         ),
         'mrnaeem/argus' => array(
-            'pretty_version' => '1.1.0',
-            'version' => '1.1.0.0',
+            'pretty_version' => '1.2.0',
+            'version' => '1.2.0.0',
             'reference' => null,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
