@@ -11,6 +11,10 @@ class OpenCTI
 
     protected $headers;
 
+    protected $status = false;
+
+    protected $data = [];
+
     protected $observable = '';
 
     protected $decision = ['notification' => true, 'reporting' => true];
@@ -89,8 +93,10 @@ class OpenCTI
     private function __scoring()
     {
         $opencti = $this->_getObservable();
-        if($opencti['status'] === true) {
-            $data = $opencti['data']['data']['stixCyberObservables']['edges'][0]['node'];
+        $this->status = $opencti['status'];
+        if($this->status === true) {
+            $this->data = $opencti['data'];
+            $data = $this->data['data']['stixCyberObservables']['edges'][0]['node'];
             if(!empty($data)) {
                 foreach ($data['objectLabel'] as $value) {
                     $this->dataMapping['classification'][$data['createdBy']['name']][] = $value['value'];
@@ -135,6 +141,7 @@ class OpenCTI
         $this->_saveResults();
 
         return [
+            'status' => $this->status,
             'scores' => $this->dataMapping['opencti_score'],
             'hash' => $this->observable,
             'description' => "Hash analysis based on OpenCTI (Scores {$this->dataMapping['opencti_score']})",
