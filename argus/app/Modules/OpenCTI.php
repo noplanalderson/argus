@@ -53,7 +53,7 @@ class OpenCTI
                     "mode" => "and",
                     "filters" => [
                         [
-                            "key" => "entyty_type",
+                            "key" => "entity_type",
                             "values" => [],
                             "operator" => "eq",
                             "mode" => "or"
