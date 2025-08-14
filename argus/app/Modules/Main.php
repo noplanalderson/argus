@@ -91,7 +91,7 @@ class Main
                                 $results = $scoring->run();
                             } catch (\GuzzleHttp\Exception\RequestException $e) {
                                 
-                                if($results['status'] === false || !empty($results['opencti']['errors'])) {
+                                if(!empty($results['opencti']['errors'])) {
                                     if($threatIntelResult['status']) {
                                         $scoring2 = new \App\Modules\HashScoring($threatIntelResult['data']);
                                         $results = $scoring2->run();
