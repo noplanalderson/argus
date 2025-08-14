@@ -146,7 +146,7 @@ class HashScoring
             ':yara_score' => $this->dataMapping['yaraScore'],
             ':opencti_score' => null,
             ':overall_score' => $this->overallScore,
-            ':decision' => $this->decision
+            ':decision' => json_encode($this->decision)
         ]);
     }
 
