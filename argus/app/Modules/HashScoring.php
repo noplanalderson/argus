@@ -16,6 +16,7 @@ class HashScoring
     public $reports;
 
     public array $dataMapping = [
+        'id' => null,
         'vtScore' => 0,
         'malprobeScore' => 0,
         'mbScore' => 0,
@@ -163,6 +164,8 @@ class HashScoring
         $this->_saveResults();
 
         return [
+            'status' => true,
+            'opencti' => [],
             'scores' => $scores,
             'hash' => $this->reports['observable_name'],
             'description' => "Hash analysis based on multiple threat intelligence (Scores {$scores})",
