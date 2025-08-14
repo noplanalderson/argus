@@ -131,16 +131,16 @@ class HashScoring
         $uuid   = Uuid::uuid7()->toString();
 
         $stmt = $db->prepare("INSERT INTO `tb_file_hash` (
-                    `hash_id`, `file_hash`, `observable_name`, `classification`, `malproble_score`,
+                    `hash_id`, `file_hash`, `observable_name`, `classification`, `malprobe_score`,
                     `vt_score`, `mb_score`, `yara_score`, `opencti_score`, `overall_score`, `decision`) VALUES
-                    (:hash_id, :file_hash, :observable_name, :classification, :malproble_score,
+                    (:hash_id, :file_hash, :observable_name, :classification, :malprobe_score,
                     :vt_score, :mb_score, :yara_score, :opencti_score, :overall_score, :decision)");
         $stmt->execute([
             ':hash_id' => $uuid,
             ':file_hash' => $this->reports['observable_name'],
             ':observable_name' => $this->reports['observable_name'],
             ':classification' => json_encode($this->dataMapping['classification']),
-            ':malproble_score' => $this->dataMapping['malprobeScore'],
+            ':malprobe_score' => $this->dataMapping['malprobeScore'],
             ':vt_score' => $this->dataMapping['vtScore'],
             ':mb_score' => $this->dataMapping['mbScore'],
             ':yara_score' => $this->dataMapping['yaraScore'],
