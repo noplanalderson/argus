@@ -86,10 +86,10 @@ class Main
                     {
                         $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
                         if(!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
-                            try {
+                            // try {
                                 $scoring = new \App\Modules\OpenCTI($hash);
                                 $results = $scoring->run();
-                            } catch (\GuzzleHttp\Exception\RequestException $e) {
+                            // } catch (\GuzzleHttp\Exception\RequestException $e) {
                                 
                                 if(!$results['status']) {
                                     if($threatIntelResult['status']) {
@@ -97,7 +97,7 @@ class Main
                                         $results = $scoring2->run();
                                     }
                                 }
-                            }
+                            // }
                         } else {
                             if($threatIntelResult['status']) {
                                 $scoring2 = new \App\Modules\HashScoring($threatIntelResult['data']);
