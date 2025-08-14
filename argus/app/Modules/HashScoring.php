@@ -137,7 +137,7 @@ class HashScoring
                     :vt_score, :mb_score, :yara_score, :opencti_score, :overall_score, :decision)");
         $stmt->execute([
             ':hash_id' => $uuid,
-            ':file_hash' => $this->reports['file_hash'],
+            ':file_hash' => $this->reports['observable_name'],
             ':observable_name' => $this->reports['observable_name'],
             ':classification' => json_encode($this->dataMapping['classification']),
             ':malproble_score' => $this->dataMapping['malprobeScore'],
@@ -156,6 +156,7 @@ class HashScoring
 
         $this->overallScore = $this->dataMapping['vtScore'] * $this->vtWeight +
                     $this->dataMapping['mbScore'] * $this->mbWeight +
+                    $this->dataMapping['malprobeScore'] * $this->malprobeWeight +
                     $this->dataMapping['yaraScore'] * $this->yaraWeight;
         $scores = round($this->overallScore, 0);
 
