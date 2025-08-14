@@ -74,12 +74,17 @@ class OpenCTI
 
     private function request($method, $endpoint, $params)
     {
-        $res = $this->client->request($method, $_ENV['OPENCTI_URL'] . $endpoint,  $params);
-        if ($res->getStatusCode() == 200) {
-            $data = json_decode($res->getBody()->getContents(), true);
-            return ['status' => true, 'code' => $res->getStatusCode(), 'data' => $data];
+        try {
+            $res = $this->client->request($method, $_ENV['OPENCTI_URL'] . $endpoint,  $params);
+            $code = $res->getStatusCode();
+            if ($code == 200) {
+                $data = json_decode($res->getBody()->getContents(), true);
+                return ['status' => true, 'code' => $code, 'data' => $data];
+            }
+        } catch (\Exception $e) {
+            $code = $e->getCode();
         }
-        return ['status' => false, 'code' => $res->getStatusCode(), 'data' => []];
+        return ['status' => false, 'code' => $code, 'data' => []];
     }
 
     private function _getObservable()
