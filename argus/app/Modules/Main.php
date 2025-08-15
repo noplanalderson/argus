@@ -144,6 +144,11 @@ class Main
                     $yeti = new \App\Modules\Yeti;
                     $yeti->getAccessToken();
                     $observableData = $yeti->getObservable($post);
+                    if($observableData['code'] === 200) {
+                        if(!empty($observableData['data']['known'])) {
+                            $observableData = $yeti->addObservable($post);
+                        }
+                    }
                     setJSON($observableData, $observableData['code']);
                     break;
 
