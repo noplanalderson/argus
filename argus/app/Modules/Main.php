@@ -146,7 +146,7 @@ class Main
                     $yeti->getAccessToken();
                     $observableData = $yeti->getObservable($observable);
                     if($observableData['code'] === 200) {
-                        if(!empty($observableData['data']['known'])) {
+                        if(empty($observableData['data']['known'])) {
                             $observableData = $yeti->addObservable($observable, $type);
                         }
                     }

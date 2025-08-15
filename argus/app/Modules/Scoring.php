@@ -86,9 +86,9 @@ class Scoring
 
     public function extractData()
     {
+        $dataMapping = $this->dataMapping;
         if(!empty($this->reports['analyzer_reports'])) 
         {
-            $dataMapping = $this->dataMapping;
             foreach ($this->reports['analyzer_reports'] as $ti) {
                 if($ti['name'] == 'AbuseIPDB' && $ti['status'] == 'SUCCESS') {
                     $dataMapping['abuseIpScore'] = $ti['report']['data']['abuseConfidenceScore'] ?? 0;
