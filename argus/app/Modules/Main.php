@@ -140,25 +140,26 @@ class Main
                     break;
                 
                 case 'yeti':
-                    $post = $this->request->post('observable');
+                    $observable = $this->request->post('observable');
+                    $type = $this->request->post('type');
                     $yeti = new \App\Modules\Yeti;
                     $yeti->getAccessToken();
-                    $observableData = $yeti->getObservable($post);
+                    $observableData = $yeti->getObservable($observable);
                     if($observableData['code'] === 200) {
                         if(!empty($observableData['data']['known'])) {
-                            $observableData = $yeti->addObservable($post);
+                            $observableData = $yeti->addObservable($observable, $type);
                         }
                     }
                     setJSON($observableData, $observableData['code']);
                     break;
 
-                case 'yeti_add':
-                    $post = $this->request->post('observable');
-                    $yeti = new \App\Modules\Yeti;
-                    $yeti->getAccessToken();
-                    $observableData = $yeti->addObservable($post);
-                    setJSON($observableData, $observableData['code']);
-                    break;
+                // case 'yeti_add':
+                //     $post = $this->request->post('observable');
+                //     $yeti = new \App\Modules\Yeti;
+                //     $yeti->getAccessToken();
+                //     $observableData = $yeti->addObservable($post);
+                //     setJSON($observableData, $observableData['code']);
+                //     break;
 
                 default:
                     setJSON([

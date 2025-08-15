@@ -60,15 +60,16 @@ class Yeti
         }
     }
 
-    public function addObservable($observable)
+    public function addObservable($observable, $type)
     {
         $tags = [];
         $context = [];
+        $type = $type == 'ip' ? 'ipv4' : 'sha1';
         $params = [
             'headers' => array_merge($this->headers, ['Authorization' => "Bearer {$this->token}"]),
             'body' => json_encode([
                 'observable' => [
-                    'type' => 'ipv4',
+                    'type' => $type,
                     'value' => $observable,
                 ]
             ])
