@@ -295,6 +295,7 @@ class Scoring
             // Balikin hasil existing tanpa analisa ulang
             return [
                 'scores'       => $this->recentHistory['overall_score'],
+                'type' => 'ip',
                 'historyHits'  => 1,
                 'histories'    => [$this->recentHistory],
                 'firedTimes'   => $this->firedTimes,
