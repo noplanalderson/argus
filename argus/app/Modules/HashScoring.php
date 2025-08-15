@@ -165,6 +165,7 @@ class HashScoring
 
         return [
             'status' => true,
+            'type' => 'hash',
             'opencti' => [],
             'scores' => $scores,
             'hash' => $this->reports['observable_name'],

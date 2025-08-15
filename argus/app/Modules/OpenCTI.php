@@ -148,6 +148,7 @@ class OpenCTI
 
         return [
             'status' => $this->status,
+            'type' => 'hash',
             'opencti' => $this->data,
             'scores' => $this->dataMapping['opencti_score'],
             'hash' => $this->observable,

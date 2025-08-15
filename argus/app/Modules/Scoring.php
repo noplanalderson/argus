@@ -325,6 +325,7 @@ class Scoring
 
         return [
             'scores' => $this->sOverall,
+            'type' => 'ip',
             'historyHits' => $this->recentHistory ? 1 : 0,
             'histories' => $this->recentHistory ? [$this->recentHistory] : [],
             'firedTimes'   => $this->firedTimes,
