@@ -260,6 +260,8 @@ class Analyzer
         } else {
             $this->data['ip_info'] = ['isp' => 'N/A', 'country' => 'N/A', 'city' => 'N/A'];
         }
+        
+        $this->data['ip_info']['isPublic'] = checkIPType($this->reports['observable']);
     }
 
     protected function isBlacklisted()
@@ -279,7 +281,6 @@ class Analyzer
             $this->logError('BLOCKLIST', $th->getMessage());
         }
         $this->data['scores']['blocklist'] = $blocklistScore;
-        $this->data['ip_info']['isPublic'] = checkIPType($this->reports['observable']);
     }
 
     protected function opencti()
