@@ -57,10 +57,13 @@ class CriminalIPScoring
 
         // --- ada port vulnerable? ---
         $hasVulnPort = false;
-        foreach ($data['current_open_ports']['TCP'] as $port) {
-            if ($port['has_vulnerability']) {
-                $hasVulnPort = true;
-                break;
+        if(!empty($data['current_open_ports']))
+        {
+            foreach ($data['current_open_ports']['TCP'] as $port) {
+                if ($port['has_vulnerability']) {
+                    $hasVulnPort = true;
+                    break;
+                }
             }
         }
         if ($hasVulnPort) {
