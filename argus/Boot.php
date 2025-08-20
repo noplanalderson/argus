@@ -4,6 +4,9 @@ namespace Microservices;
 use App\Config\Paths;
 use App\Modules\Main;
 use Dotenv\Dotenv;
+use App\Config\Database;
+use App\Cores\DB;
+use App\Cores\QueryBuilder;
 
 class Boot
 {
@@ -12,6 +15,9 @@ class Boot
         static::loadConstants($paths);
         static::loadDotEnv($paths);
         static::loadFunction($paths);
+
+        $db = (new Database())->getConnection();
+        DB::setConnection($db);
 
         // Ok, here we go!
         (new Main)->run();

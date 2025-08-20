@@ -22,7 +22,7 @@ services:
     volumes:
       - ./argus:/var/www/html  # Mount source code for live editing
       - ./argus/vendor:/var/www/html/vendor  # Persist vendor directory
-      - ./logs:/var/log  # Mount logs directory for easier access
+      - ./argus/logs:/var/log  # Mount logs directory for easier access
     networks:
       - app-network
     # Restart policy for development

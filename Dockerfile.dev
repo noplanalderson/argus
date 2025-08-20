@@ -32,7 +32,7 @@ chmod 666 /var/log/ip-blocklist.log\n\
 # Create nginx log files with proper permissions\n\
 touch /var/log/nginx/argus_access.log\n\
 touch /var/log/nginx/argus_error.log\n\
-touch /var/log/nginx/argus_security.log\n\
+touch /var/log/argus_tip.log\n\
 chmod 666 /var/log/nginx/*.log\n\
 chown www-data:www-data /var/log/nginx/*.log\n\
 \n\

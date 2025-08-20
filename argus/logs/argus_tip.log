@@ -1,0 +1,114 @@
+[2025-08-17 00:17:28] [crowdsec] Request error [status 429]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.62.156.10` resulted in a `429 Too Many Requests` response:
+{"message":"Limit Exceeded"}
+
+
+[2025-08-17 00:17:32] [abuseipdb] Connection error: cURL error 28: Operation timed out after 5011 milliseconds with 232666 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://api.abuseipdb.com/api/v2/check/?ipAddress=64.62.156.10&maxAgeInDays=90&verbose=1
+[2025-08-17 00:37:42] [crowdsec] Request error [status 429]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.62.156.10` resulted in a `429 Too Many Requests` response:
+{"message":"Limit Exceeded"}
+
+
+[2025-08-17 00:37:52] [abuseipdb] Connection error: cURL error 28: Operation timed out after 10001 milliseconds with 382772 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://api.abuseipdb.com/api/v2/check/?ipAddress=64.62.156.10&maxAgeInDays=90&verbose=1
+[2025-08-17 09:34:17] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/144.0.1.4` resulted in a `404 Not Found` response:
+{"message": "IP address information not found"}
+
+[2025-08-17 09:35:12] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.129.31.39` resulted in a `404 Not Found` response:
+{"message": "IP address information not found"}
+
+[2025-08-17 09:39:16] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.129.31.39` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-17 09:39:29] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.129.31.39` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-17 09:44:37] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.129.31.39` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-17 09:45:56] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/64.129.31.39` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-17 10:45:41] [virustotal] Connection error: cURL error 28: Connection timed out after 10008 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://www.virustotal.com/api/v3/files/f2c781e475332049cedfb19b7371a1101a59d8b2
+[2025-08-17 10:45:41] [malwarebazaar] Connection error: cURL error 28: Connection timed out after 10006 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://mb-api.abuse.ch/api/v1/
+[2025-08-17 10:45:41] [yaraify] Connection error: cURL error 28: Connection timed out after 10004 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://yaraify-api.abuse.ch/api/v1/
+[2025-08-17 10:45:41] [malprobe] Connection error: cURL error 28: Connection timed out after 10002 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://malprob.io/api/search/f2c781e475332049cedfb19b7371a1101a59d8b2
+[2025-08-17 10:50:42] [virustotal] Connection error: cURL error 28: Connection timed out after 10013 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://www.virustotal.com/api/v3/files/25ed2290f2567d8abf5bdb171564f3442304abc4
+[2025-08-17 10:50:42] [malwarebazaar] Connection error: cURL error 28: Connection timed out after 10011 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://mb-api.abuse.ch/api/v1/
+[2025-08-17 10:50:42] [yaraify] Connection error: cURL error 28: Connection timed out after 10010 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://yaraify-api.abuse.ch/api/v1/
+[2025-08-17 10:50:42] [malprobe] Connection error: cURL error 28: Connection timed out after 10009 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f3442304abc4
+[2025-08-17 11:19:14] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f3442304abc4` resulted in a `404 Not Found` response:"File not found"
+[2025-08-17 11:19:19] [opencti] Connection error: cURL error 28: Connection timed out after 10007 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-17 13:49:21] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f3442304abc4` resulted in a `404 Not Found` response:"File not found"
+[2025-08-17 13:49:29] [opencti] Connection error: cURL error 28: Connection timed out after 10001 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-17 13:50:50] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f3442304abc4` resulted in a `404 Not Found` response:"File not found"
+[2025-08-17 13:50:59] [opencti] Connection error: cURL error 28: Connection timed out after 10002 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-17 13:52:24] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f3442304abc4` resulted in a `404 Not Found` response:"File not found"
+[2025-08-17 13:52:32] [opencti] Connection error: cURL error 28: Connection timed out after 10002 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-17 14:43:54] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f3442304abc4` resulted in a `404 Not Found` response:"File not found"
+[2025-08-17 14:44:02] [opencti] Connection error: cURL error 28: Connection timed out after 10018 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-17 21:50:27] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/25ed2290f2567d8abf5bdb171564f0442304abc4` resulted in a `404 Not Found` response:{"error": {"code": "NotFoundError", "message": "File \"25ed2290f2567d8abf5bdb171564f0442304abc4\" not found"}}
+[2025-08-17 21:50:29] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/25ed2290f2567d8abf5bdb171564f0442304abc4` resulted in a `404 Not Found` response:"File not found"
+[2025-08-17 21:50:37] [opencti] Connection error: cURL error 28: Connection timed out after 10016 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-18 14:27:55] [opencti] Connection error: cURL error 28: Connection timed out after 10006 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-18 14:34:04] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/418c01776ed59d85c41f05702c6b75e31fe47c2f` resulted in a `404 Not Found` response:{"error": {"code": "NotFoundError", "message": "File \"418c01776ed59d85c41f05702c6b75e31fe47c2f\" not found"}}
+[2025-08-18 14:34:05] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/418c01776ed59d85c41f05702c6b75e31fe47c2f` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 14:34:13] [opencti] Connection error: cURL error 28: Connection timed out after 10013 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-18 14:34:50] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/0bc359d20324aa19d43c40034670a1d2a0e123b0` resulted in a `404 Not Found` response:{"error": {"code": "NotFoundError", "message": "File \"0bc359d20324aa19d43c40034670a1d2a0e123b0\" not found"}}
+[2025-08-18 14:34:51] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/0bc359d20324aa19d43c40034670a1d2a0e123b0` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 14:35:00] [opencti] Connection error: cURL error 28: Connection timed out after 10002 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-18 14:36:36] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/69fc193cc58ea43cf7629fb8b36e76598bc3eea1cb668f32540ccb8dd65aaab2` resulted in a `404 Not Found` response:{"error": {"code": "NotFoundError", "message": "File \"69fc193cc58ea43cf7629fb8b36e76598bc3eea1cb668f32540ccb8dd65aaab2\ (truncated...)
+[2025-08-18 14:36:37] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/69fc193cc58ea43cf7629fb8b36e76598bc3eea1cb668f32540ccb8dd65aaab2` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 14:36:46] [opencti] Connection error: cURL error 28: Connection timed out after 10009 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-18 14:40:10] [opencti] Connection error: cURL error 28: Connection timed out after 10005 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-18 14:45:46] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/cc597480e2f833f48e67ec75cd2c41547ceeb04c` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 14:48:38] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/de7fa65d5cd5314ba0ce6ab19a7dcd9853639a1152447457de7efb39a9ba1f46` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 14:48:53] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/21527985085b570a8c429df8f3e8cfc0da5664b605c641d05a1f09692539a1d51deac5d60622290ee86fdd9b250dcf4e` resulted in a `404 Not Found` response:{"error":{"code":"NotFoundError","message":"Resource not found."}}
+[2025-08-18 14:48:54] [malprobe] Request error [status 400]: Client error: `GET https://malprob.io/api/search/21527985085b570a8c429df8f3e8cfc0da5664b605c641d05a1f09692539a1d51deac5d60622290ee86fdd9b250dcf4e` resulted in a `400 Bad Request` response:"Invalid HashCode: the codes supported are sha256, sha1, md5"
+[2025-08-18 14:52:42] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/d29f33a7d26b7d7253e07bc7517779076a5b021f` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 16:09:54] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/6a0067a62ee2e335b8345b631edfd329f319249c` resulted in a `404 Not Found` response:{"error": {"code": "NotFoundError", "message": "File \"6a0067a62ee2e335b8345b631edfd329f319249c\" not found"}}
+[2025-08-18 16:09:55] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/6a0067a62ee2e335b8345b631edfd329f319249c` resulted in a `404 Not Found` response:"File not found"
+[2025-08-18 17:11:07] [crowdsec] Request error [status 429]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/108.50.123.11` resulted in a `429 Too Many Requests` response:{"message":"Limit Exceeded"}
+[2025-08-18 18:52:16] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/66.85.133.1` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-19 11:21:18] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:21:18] [[DB_OPERATION]] SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'crowdsec_score' cannot be null
+[2025-08-19 11:23:01] [opencti] Connection error: cURL error 28: Connection timed out after 10002 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 11:23:01] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:23:01] [[DB_OPERATION]] SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'crowdsec_score' cannot be null
+[2025-08-19 11:30:29] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:30:29] [[DB_OPERATION]] SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'abuseip_score' cannot be null
+[2025-08-19 11:33:19] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:40:53] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:46:09] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:52:11] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:52:18] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:53:15] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 11:54:24] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 13:18:11] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 13:18:59] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2044 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 13:19:03] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 13:20:44] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 13:20:58] [[BLOCKLIST]] Call to undefined function App\Modules\dba_open()
+[2025-08-19 14:35:58] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2024 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:36:04] [BLOCKLIST] dba_close(): Argument #1 ($dba) must be of type resource, bool given
+[2025-08-19 14:39:26] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2025 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:40:51] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2027 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:44:00] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2027 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:45:30] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2020 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:46:58] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2029 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:49:24] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2033 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 14:51:13] [opencti] Connection error: cURL error 7: Failed to connect to 172.16.9.46 port 8080 after 2026 ms: Couldn't connect to server (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-19 15:30:03] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/1.0.230.68` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-19 15:33:49] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/1.15.139.145` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-19 18:22:10] [crowdsec] Request error [status 404]: Client error: `GET https://cti.api.crowdsec.net/v2/smoke/101.200.221.43` resulted in a `404 Not Found` response:{"message": "IP address information not found"}
+[2025-08-20 06:34:41] [opencti] Connection error: cURL error 28: Connection timed out after 10000 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-20 06:34:41] [OPENCTI] Failed to retrieve OpenCTI data for observable: 83.97.117.29
+[2025-08-20 06:35:40] [opencti] Connection error: cURL error 28: Connection timed out after 10006 milliseconds (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-20 06:35:40] [OPENCTI] Failed to retrieve OpenCTI data for observable: 77.83.148.112
+[2025-08-20 07:30:56] [OPENCTI] Failed to retrieve OpenCTI data for observable: 77.83.148.112
+[2025-08-20 07:31:25] [OPENCTI] Failed to retrieve OpenCTI data for observable: 77.83.148.112
+[2025-08-20 07:32:24] [OPENCTI] Failed to retrieve OpenCTI data for observable: 77.83.148.112
+[2025-08-20 07:32:52] [OPENCTI] Failed to retrieve OpenCTI data for observable: 77.83.148.112
+[2025-08-20 07:51:29] [OPENCTI] Failed to retrieve OpenCTI data for observable: 77.83.148.112
+[2025-08-20 07:51:35] [OPENCTI] Failed to retrieve OpenCTI data for observable: 83.97.117.29
+[2025-08-20 16:02:29] [DB_OPERATION] SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'abuseip_score' cannot be null
+[2025-08-20 16:08:28] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/52ac9997d24911a3be82b3f6da2a72bc9927e3cd` resulted in a `404 Not Found` response:"File not found"
+[2025-08-20 16:08:34] [DB_OPERATION] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'open_cti' in 'field list'
+[2025-08-20 16:12:32] [DB_OPERATION] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'open_cti' in 'field list'
+[2025-08-20 16:14:24] [DB_OPERATION] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'open_cti' in 'field list'
+[2025-08-20 16:15:06] [DB_OPERATION] SQLSTATE[42S22]: Column not found: 1054 Unknown column 'open_cti' in 'field list'
+[2025-08-20 16:18:23] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/573f1ff8153ecb4d8961b43ff71a46cc2d486993fd6cbafeeccb07edc4210c21` resulted in a `404 Not Found` response:"File not found"
+[2025-08-20 16:21:03] [virustotal] Request error [status 404]: Client error: `GET https://www.virustotal.com/api/v3/files/199a32712998c6d736a05b2dbd24a761` resulted in a `404 Not Found` response:{"error": {"code": "NotFoundError", "message": "File \"199a32712998c6d736a05b2dbd24a761\" not found"}}
+[2025-08-20 16:21:04] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/199a32712998c6d736a05b2dbd24a761` resulted in a `404 Not Found` response:"File not found"
+[2025-08-20 16:24:57] [malprobe] Request error [status 404]: Client error: `GET https://malprob.io/api/search/bfe95b17c9da49a20da5b5b3f9b0c83ef4c6c03e143215d0b2f6a626fd7e3daa` resulted in a `404 Not Found` response:"File not found"
+[2025-08-20 16:25:06] [opencti] Connection error: cURL error 28: Operation timed out after 10008 milliseconds with 0 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://172.16.9.46:8080/graphql
+[2025-08-20 16:25:06] [OPENCTI] Failed to retrieve OpenCTI data for observable: bfe95b17c9da49a20da5b5b3f9b0c83ef4c6c03e143215d0b2f6a626fd7e3daa

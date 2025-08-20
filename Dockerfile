@@ -32,6 +32,7 @@ RUN if [ -f "/var/www/html/cron/blocklist-cron" ]; then \
 
 # Create log files
 RUN touch /var/log/ip-blocklist.log && chmod 666 /var/log/ip-blocklist.log
+RUN touch /var/log/argus_tip.log && chmod 666 /var/log/argus_tip.log
 
 # Generate blocklist if not exist
 RUN if [ ! -f "/var/www/html/blocklist/argus-ipsets.cdb" ]; then \

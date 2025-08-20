@@ -1,15 +1,17 @@
 <?php
 namespace App\Modules;
 use App\Config\Config;
+use App\Config\TIPConfig;
+use App\Libraries\ArgusAggregator;
 
 /**
- * Main Class of Microservice Decision
+ * Main Class of Argus (Adaptive Reputation & Guarding Unified System)
  * based on Mutiple-source Threat Intelligence Platforms
  * 
- * @package Mikroservices Decision
+ * @package Argus
  * @author  Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>
  * @since 2025
- * @version 1.0
+ * @version 2.0
 */
 class Main
 {
@@ -66,58 +68,12 @@ class Main
                         'results' => ['ip_address' => $ip, 'status' => $status]
                     ], 200);
                     break;
-
-                case 'analyze':
-                    $jobId = $this->request->post('job_id');
-                    $firedTimes = $this->request->post('firedtimes');
-                    $hash = $this->request->post('hash');
-                    $type = $this->request->post('type');
-                    $results = [];
-                    if($type === 'ip')
-                    {
-                        $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
-                        if($threatIntelResult['status']) {
-                            $scoring = new \App\Modules\Scoring($threatIntelResult['data'], $firedTimes);
-                            $extract = $scoring->extractData();
-                            $results = $extract->run();
-                        }
-                    }
-                    else 
-                    {
-                        $threatIntelResult = (new \App\Modules\Receiver($jobId))->exec();
-                        if(!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
-                            // try {
-                                $scoring = new \App\Modules\OpenCTI($hash);
-                                $results = $scoring->run();
-                            // } catch (\GuzzleHttp\Exception\RequestException $e) {
-                                
-                                if(!$results['status']) {
-                                    if($threatIntelResult['status']) {
-                                        $scoring2 = new \App\Modules\HashScoring($threatIntelResult['data']);
-                                        $results = $scoring2->run();
-                                    }
-                                }
-                            // }
-                        } else {
-                            if($threatIntelResult['status']) {
-                                $scoring2 = new \App\Modules\HashScoring($threatIntelResult['data']);
-                                $results = $scoring2->run();
-                            }
-                        }
-                    }
-                    setJSON([
-                        'code' => 200,
-                        'error' => null,
-                        'message' => "Ok",
-                        'results' => $results
-                    ], 200);
-                    break;
                 
                 case 'action':
                     $post = $this->request->post();
 
                     if($_ENV['FW_TYPE'] == 'SANGFOR') {
-                        $sangfor = new \App\Modules\Sangfor;
+                        $sangfor = new \App\Libraries\Sangfor;
                         $sangfor->login();
                         $sangfor->keepalive();
 
@@ -128,13 +84,13 @@ class Main
                             $block = $sangfor->tempblock($post);
                         }
                     } else {
-                        $mikrotik = new \App\Modules\Mikrotik;
+                        $mikrotik = new \App\Libraries\Mikrotik;
                         $block = $mikrotik->cmd($post);
                     }
                     setJSON([
                         'code' => 200,
                         'error' => null,
-                        'message' => "Aman Kamerad 🫡!",
+                        'message' => "Ready, comrade 🫡!",
                         'result' => $block
                     ], 200);
                     break;
@@ -153,22 +109,50 @@ class Main
                     setJSON($observableData, $observableData['code']);
                     break;
 
-                // case 'yeti_add':
-                //     $post = $this->request->post('observable');
-                //     $yeti = new \App\Modules\Yeti;
-                //     $yeti->getAccessToken();
-                //     $observableData = $yeti->addObservable($post);
-                //     setJSON($observableData, $observableData['code']);
-                //     break;
+                case 'analyze':
+                    $observable = $this->request->post('observable');
+                    $frequency = $this->request->post('frequency', 0);
+
+                    // Validate if $observable is a valid IP or SHA1
+                    if (
+                        !filter_var($observable, FILTER_VALIDATE_IP) &&
+                        !preg_match('/^[a-f0-9]{40}$/i', $observable) &&   // SHA1
+                        !preg_match('/^[a-f0-9]{64}$/i', $observable) &&   // SHA256
+                        !preg_match('/^[a-f0-9]{96}$/i', $observable) &&   // SHA384
+                        !preg_match('/^[a-f0-9]{32}$/i', $observable)      // SHA128 (MD5)
+                    ) {
+                        setJSON([
+                            'code' => 400,
+                            'error' => 'Bad Request',
+                            'message' => 'Observable must be a valid IP address or SHA hash.'
+                        ], 400);
+                        break;
+                    }
+
+                    $type = filter_var($observable, FILTER_VALIDATE_IP) ? 'ip' : 'hash';
+                    $sources = TIPConfig::getSources($type);
+                    $agg = new ArgusAggregator($observable, $sources);
+                    $results = $agg->run();
+
+                    $analyzer = new Analyzer($results, $type, $frequency);
+                    $analyzerResults = $analyzer->scoring()->exec();
+
+                    setJSON([
+                        'code' => 200,
+                        'error' => null,
+                        'message' => 'Ok',
+                        'results' => $analyzerResults
+                    ], 200);
+                    break;
 
                 default:
                     setJSON([
                         'code' => 200,
                         'error' => null,
-                        'title' => "ARGUS Guard",
-                        'description' => "Argus (Automated Reputation-based Global Untrusted Source-blocker) based on Multiple Threat Intelligence Source and Blocklist with Automatic Blocking to Sangfor NGFW or Mikrotik",
+                        'title' => "ARGUS",
+                        'description' => "Argus (Adaptive Reputation & Guarding Unified System) based on Multiple Threat Intelligence Source and Blocklist with Automatic IP Blocker to Sangfor NGFW or Mikrotik",
                         'author' => "Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>",
-                        'version' => "1.0.0",
+                        'version' => "2.0.0",
                         'availablePath' => [
                             '[GET] /home',
                             '[POST] /analyze',
