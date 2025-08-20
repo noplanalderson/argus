@@ -46,19 +46,20 @@ class CriminalIPScoring
         }
 
         // --- jumlah open ports ---
-        $ports = count($data['current_open_ports']['TCP'] ?? []);
-        if ($ports > 10) {
-            $score += 1.0 * $this->weights['open_ports'];
-        } elseif ($ports >= 5) {
-            $score += 0.5 * $this->weights['open_ports'];
-        } else {
-            $score += 0.2 * $this->weights['open_ports'];
-        }
-
         // --- ada port vulnerable? ---
         $hasVulnPort = false;
+        $ports = 0;
         if(!empty($data['current_open_ports']))
         {
+            $ports = count($data['current_open_ports']['TCP'] ?? []);
+            if ($ports > 10) {
+                $score += 1.0 * $this->weights['open_ports'];
+            } elseif ($ports >= 5) {
+                $score += 0.5 * $this->weights['open_ports'];
+            } else {
+                $score += 0.2 * $this->weights['open_ports'];
+            }
+
             foreach ($data['current_open_ports']['TCP'] as $port) {
                 if ($port['has_vulnerability']) {
                     $hasVulnPort = true;
