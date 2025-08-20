@@ -471,6 +471,10 @@ class Analyzer
 
     public function exec()
     {
-        return array_merge($this->data, ['type' => $this->type, 'success_source' => count($this->successResources[$this->type]).'/'.count($this->weight[$this->type])]);
+        return array_merge($this->data, [
+            'type' => $this->type, 
+            'description' => strtoupper($this->type) . " analysis based on multiple TIPs (Scores {$this->data['scores']['overall']})",
+            'success_source' => count($this->successResources[$this->type]).'/'.count($this->weight[$this->type])
+        ]);
     }
 }
