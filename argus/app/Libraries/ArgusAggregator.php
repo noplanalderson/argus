@@ -89,7 +89,8 @@ class ArgusAggregator
 
         if ($results && isset($results['created_at'])) {
             $createdAt = strtotime($results['created_at']);
-            if ($createdAt !== false && $createdAt >= strtotime("-{$_ENV['FORCE_REANALYZE']} days")) {
+            $reanalyze = $_ENV['FORCE_REANALYZE'] ?? 60;
+            if ($createdAt !== false && $createdAt >= strtotime("-{$reanalyze} days")) {
                 return array_merge(['observable' => $this->observable], json_decode($results['results'], true));
             }
         }
