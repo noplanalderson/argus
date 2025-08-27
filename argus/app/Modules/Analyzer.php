@@ -120,7 +120,7 @@ class Analyzer
 
                 $vtResults = $this->reports['virustotal']['results']['data'];
                 $score = $vt->calculateFinalScore($vtResults);
-                $this->data['scores']['virustotal'] = $this->__normalizeScores($score['final_score'], 1);
+                $this->data['scores']['virustotal'] = round($this->__normalizeScores($score['final_score'], 1),2);
 
                 if(!empty($vtResults['behaviour_summary']['data']))
                 {
