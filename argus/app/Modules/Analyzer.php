@@ -224,15 +224,16 @@ class Analyzer
     {
         if(isset($this->reports['criminalip'])) {
             if($this->reports['criminalip']['success'] == true) {
-
-                $this->successResources['ip']['criminalip'] = true;
-
-                $data = $this->reports['criminalip']['results'];
-                $crimip = new CriminalIPScoring();
-                $score = $crimip->calculateScore($data);
-                $this->data['scores']['criminalip'] = $score['score'];
-
-                $this->data['classification']['criminalip'] = $data['tags'] ?? [];
+                if($this->reports['criminalip']['results']['status'] == 200) {
+                    $this->successResources['ip']['criminalip'] = true;
+    
+                    $data = $this->reports['criminalip']['results'];
+                    $crimip = new CriminalIPScoring();
+                    $score = $crimip->calculateScore($data);
+                    $this->data['scores']['criminalip'] = $score['score'];
+    
+                    $this->data['classification']['criminalip'] = $data['tags'] ?? [];
+                }
             }
         }
     }
@@ -471,10 +472,15 @@ class Analyzer
 
     public function exec()
     {
+        $success = 0;
+        foreach ($this->successResources[$this->type] as $value) {
+            if($value) $success++;
+        }
+
         return array_merge($this->data, [
             'type' => $this->type, 
             'description' => strtoupper($this->type) . " analysis based on multiple TIPs (Scores {$this->data['scores']['overall']})",
-            'success_source' => count($this->successResources[$this->type]).'/'.count($this->weight[$this->type])
+            'success_source' => $success.'/'.count($this->successResources[$this->type])
         ]);
     }
 }
