@@ -144,7 +144,17 @@ class Main
                         'results' => $analyzerResults
                     ], 200);
                     break;
-
+                
+                case 'blocklist':
+                    $blocklist = new \App\Modules\Blocklist(
+                        $this->request->post('date_start'),
+                        $this->request->post('date_end'),
+                        $this->request->post('limit', 10),
+                        $this->request->post('offset', 0)
+                    );
+                    $results = $blocklist->getBlocklist();
+                    setJSON($results, 200);
+                    break;
                 default:
                     setJSON([
                         'code' => 200,
