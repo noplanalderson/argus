@@ -33,17 +33,20 @@ class Blocklist
             'blockmode' => false 
         ];
 
-        $results = DB::from('tb_ip_address', 'a')->select([
-                'a.ip_address', 
-                'a.isp', 
-                'a.location',
-                "JSON_EXTRACT(b.decision, '$.blockmode') AS blockmode", 
-                'b.created_at'
-            ])->join('tb_analysis_history AS b', 'a.ip_id_uuid = b.ip_id_uuid')
-            ->where('DATE(b.created_at)', '>=', $this->dateStart)
-            ->where('DATE(b.created_at)', '<=', $this->dateEnd)
-            ->orderBy('a.created_at', 'desc')
-            ->limit($this->limit, $this->offset)->get();
+        $results = DB::from('tb_ip_address', 'a')
+                        ->select([
+                            'a.ip_address',
+                            'a.isp',
+                            'a.location',
+                            "JSON_EXTRACT(b.decision, '$.blockmode') AS blockmode",
+                            'b.created_at'
+                        ])
+                        ->join('tb_analysis_history AS b', 'a.ip_id_uuid = b.ip_id_uuid')
+                        ->whereRaw('DATE(b.created_at) >= :start', [':start' => $this->dateStart])
+                        ->whereRaw('DATE(b.created_at) <= :end', [':end' => $this->dateEnd])
+                        ->orderBy('a.created_at', 'desc')
+                        ->limit($this->limit, $this->offset)
+                        ->get();
             
         return $results;
     }
