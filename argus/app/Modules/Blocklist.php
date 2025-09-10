@@ -38,7 +38,7 @@ class Blocklist
                             'a.ip_address',
                             'a.isp',
                             'a.location',
-                            "JSON_EXTRACT(b.decision, '$.blockmode') AS blockmode",
+                            "JSON_UNQUOTE(JSON_EXTRACT(b.decision, '$.blockmode')) AS blockmode",
                             'b.created_at'
                         ])
                         ->join('tb_analysis_history AS b', 'a.ip_id_uuid = b.ip_id_uuid')
