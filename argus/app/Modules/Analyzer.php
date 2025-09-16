@@ -155,7 +155,7 @@ class Analyzer
                     $yaraCommunity = min(count($task['static_results']), 5) / 5;
 
                     $yaraScore = ($clamav * $clamavWeight) + ($yaraCommunity * $yaraWeight);
-                    $this->data['scores']['yaraify'] = $this->__normalizeScores($yaraScore, 100);
+                    $this->data['scores']['yaraify'] = round($this->__normalizeScores($yaraScore, 1),2);
                     $this->data['classification']['yaraify'] = $task['clamav_results'] ?? ($task['static_results'][0]['rule_name'] ?? 'Unknown');
                 }
             }
@@ -354,19 +354,19 @@ class Analyzer
                 if ($createdAt !== false && $createdAt >= strtotime("-{$blocked} days")) {
                     
                     $this->data['recentHistory'] = $history ?: null;
-                    $this->data['scores']['overall'] = round(min($scoreOverall + 1, 100), 0);
+                    $this->data['scores']['overall'] = $scoreOverall;
                     
                     $this->decision();
             
                     DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
-                        'overall_score' => $this->data['scores']['overall'],
+                        'overall_score' => round(min($scoreOverall['score'] + 1, 100), 0),
                         'updated_at' => date("Y-m-d H:i:s")
                     ]);
                 }
                 else
                 {
                     try {
-                        $this->data['scores']['overall'] = round($scoreOverall, 2);
+                        $this->data['scores']['overall'] = $scoreOverall;
                         
                         $this->decision();
             
@@ -379,7 +379,7 @@ class Analyzer
                             'criminalip_score' => $this->data['scores']['criminalip'],
                             'blocklist_score' => $this->data['scores']['blocklist'],
                             'opencti_score' => $this->data['scores']['opencti'],
-                            'overall_score' => $this->data['scores']['overall'],
+                            'overall_score' => round($scoreOverall['score'], 2),
                             'decision' => json_encode($this->data['decision']),
                             'created_at' => date("Y-m-d H:i:s")
                         ]);
@@ -389,7 +389,7 @@ class Analyzer
                 }
             } else {
                 try {
-                    $this->data['scores']['overall'] = round($scoreOverall, 2);
+                    $this->data['scores']['overall'] = $scoreOverall;
                     
                     $this->decision();
 
@@ -414,7 +414,7 @@ class Analyzer
                         'criminalip_score' => $this->data['scores']['criminalip'],
                         'blocklist_score' => $this->data['scores']['blocklist'],
                         'opencti_score' => $this->data['scores']['opencti'],
-                        'overall_score' => $this->data['scores']['overall'],
+                        'overall_score' => round($scoreOverall['score'], 2),
                         'decision' => json_encode($this->data['decision']),
                         'created_at' => date("Y-m-d H:i:s")
                     ]);
@@ -437,7 +437,7 @@ class Analyzer
             $adaptiveSAW = new AdaptiveSAW($this->data['scores'], $this->weight[$this->type], $this->successResources[$this->type]);
             $scoreOverall = $adaptiveSAW->scoring();
 
-            $this->data['scores']['overall'] = round($scoreOverall, 2);
+            $this->data['scores']['overall'] = $scoreOverall;
 
             $history = DB::table('tb_file_hash')->select('*')->where('file_hash', $this->reports['observable'])->first();
 
@@ -457,7 +457,7 @@ class Analyzer
                         'yara_score' => $this->data['scores']['yaraify'],
                         'malprobe_score' => $this->data['scores']['malprobe'],
                         'opencti_score' => $this->data['scores']['opencti'],
-                        'overall_score' => $this->data['scores']['overall'],
+                        'overall_score' => round($scoreOverall['score'], 2),
                         'decision' => json_encode($this->data['decision']),
                         'created_at' => date("Y-m-d H:i:s")
                     ]);
@@ -467,6 +467,7 @@ class Analyzer
             }
         }
 
+        $this->weight = $scoreOverall['weights'];
         return $this;
     }
 
@@ -479,7 +480,7 @@ class Analyzer
 
         return array_merge($this->data, [
             'type' => $this->type, 
-            'description' => strtoupper($this->type) . " analysis based on multiple TIPs (Scores {$this->data['scores']['overall']})",
+            'description' => strtoupper($this->type) . " analysis based on multiple TIPs (Scores {$this->data['scores']['overall']['score']})",
             'success_source' => $success.'/'.count($this->successResources[$this->type])
         ]);
     }
