@@ -1,4 +1,5 @@
-microservices/vendor
-microservices/composer.lock
-microservices/.env
+argus/vendor
+argus/composer.lock
+argus/.env
+argus/logs/*
 .env
