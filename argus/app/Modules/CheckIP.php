@@ -17,12 +17,15 @@ class CheckIP
             'blockmode' => false 
         ];
 
-        $history = DB::from('tb_analysis_history', 'a')->select([
-                'a.history_id_uuid', 'b.ip_id_uuid', 'b.ip_address', 'a.overall_score', 'a.decision', 'a.created_at'
-            ])->join('tb_ip_address AS b', 'a.ip_id_uuid = b.ip_id_uuid')
-            ->where('ip_address', '=', $this->ip)
-            ->orderBy('a.created_at', 'desc')
-            ->limit(1)->get();
+        $history = DB::from('tb_analysis_history')
+                        ->select(
+                            'history_id_uuid, tb_analysis_history.ip_id_uuid, 
+                            b.ip_address, tb_analysis_history.overall_score, tb_analysis_history.decision, 
+                            tb_analysis_history.created_at')
+                        ->join('tb_ip_address', 'tb_analysis_history.ip_id_uuid = tb_ip_address.ip_id_uuid')
+                        ->where('ip_address', '=', $this->ip)
+                        ->orderBy('tb_analysis_history.created_at', 'desc')
+                        ->limit(1)->get();
             
         if(!empty($history['history_id_uuid']))
         {
