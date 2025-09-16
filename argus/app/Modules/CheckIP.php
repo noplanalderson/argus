@@ -25,7 +25,7 @@ class CheckIP
                         ->join('tb_ip_address', 'tb_analysis_history.ip_id_uuid = tb_ip_address.ip_id_uuid')
                         ->where('ip_address', '=', $this->ip)
                         ->orderBy('tb_analysis_history.created_at', 'desc')
-                        ->limit(1)->get();
+                        ->orderBy('created_at', 'desc')->first();
             
         if(!empty($history['history_id_uuid']))
         {
