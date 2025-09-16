@@ -28,6 +28,7 @@ class Main
 
     public function run()
     {
+        date_default_timezone_set('Asia/Jakarta');
         $headers = getallheaders();
 
         if (
