@@ -36,6 +36,16 @@ class Jobs
                         ->limit($this->limit, $this->offset)
                         ->get();
             
-        return $results;
+        $data = [];
+
+        foreach ($results as $row) {
+            $data[] = [
+                'observable' => $row->observable,
+                'created_at' => $row->created_at,
+                'results' => json_decode($row->results, true)
+            ];
+        }
+
+        return $data;
     }
 }
