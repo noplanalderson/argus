@@ -29,6 +29,7 @@ class Jobs
     public function getJobs()
     {
         $results = DB::from('tb_jobs')
+                        ->select(['observable', 'created_at', 'CAST(JSON_UNQUOTE(results) AS JSON) AS results'])
                         ->whereRaw('DATE(created_at) >= :start', [':start' => $this->dateStart])
                         ->whereRaw('DATE(created_at) <= :end', [':end' => $this->dateEnd])
                         ->orderBy('created_at', 'desc')
