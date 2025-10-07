@@ -40,9 +40,9 @@ class Jobs
 
         foreach ($results as $row) {
             $data[] = [
-                'observable' => $row->observable,
-                'created_at' => $row->created_at,
-                'results' => json_decode($row->results, true)
+                'observable' => $row['observable'],
+                'created_at' => $row['created_at'],
+                'results' => json_decode($row['results'], true)
             ];
         }
 
