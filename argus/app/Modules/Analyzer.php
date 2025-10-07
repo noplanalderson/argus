@@ -310,10 +310,12 @@ class Analyzer
 
     protected function decision()
     {
-        if($this->data['scores']['overall']['score'] < 30 && $this->frequency > 15) {
+        if($this->data['scores']['overall']['score'] < 30 && $this->frequency >= 8) {
             // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
-            $decision = '3d';
-        } elseif($this->data['scores']['overall']['score'] < 30) {
+            $decision = '7d';
+        } elseif($this->data['scores']['overall']['score'] < 15) {
+            $decision = false;
+        } elseif($this->data['scores']['overall']['score'] >= 15 && $this->data['scores']['overall']['score'] < 30) {
             $decision = '1d';
         } elseif($this->data['scores']['overall']['score'] >= 30 && $this->data['scores']['overall']['score'] < 50) {
             $decision = '3d';

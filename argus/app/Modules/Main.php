@@ -156,6 +156,18 @@ class Main
                     $results = $blocklist->getBlocklist();
                     setJSON($results, 200);
                     break;
+
+                case 'jobs':
+                    $jobs = new \App\Modules\Jobs(
+                        $this->request->post('date_start'),
+                        $this->request->post('date_end'),
+                        $this->request->post('limit', 10),
+                        $this->request->post('offset', 0)
+                    );
+                    $results = $jobs->getJobs();
+                    setJSON($results, 200);
+                    break;
+
                 default:
                     setJSON([
                         'code' => 200,
