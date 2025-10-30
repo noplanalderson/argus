@@ -418,11 +418,13 @@ class Analyzer
                     $ipId = Uuid::uuid7()->toString();
                     $this->data['id'] = $ipId;
                     $this->data['scores']['overall'] = $scoreOverall;
+                    $country = $this->data['ip_info']['country'] ?? 'N/A';
+                    $city = $this->data['ip_info']['city'] ?? 'N/A';
                     DB::table('tb_ip_address')->insert([
                         'ip_id_uuid' => $ipId,
                         'ip_address' => $this->reports['observable'],
                         'isp' => $this->data['ip_info']['isp'] ?? 'Unknown',
-                        'location' => "{$this->data['ip_info']['country']} - {$this->data['ip_info']['city']}",
+                        'location' => "{$country} - {$city}",
                         'classification' => json_encode($this->data['classification']),
                         'created_at' => date("Y-m-d H:i:s")
                     ]);
