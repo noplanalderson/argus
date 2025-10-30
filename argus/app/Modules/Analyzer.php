@@ -109,6 +109,18 @@ class Analyzer
 
         file_put_contents($this->logFile, $message, FILE_APPEND);
     }
+    private function logInfo(string $source, string $info): void
+    {
+        $message = sprintf(
+            "[%s] [%s] %s%s",
+            date('Y-m-d H:i:s'),
+            $source,
+            preg_replace('/\n/', '', $info),
+            PHP_EOL
+        );
+
+        file_put_contents($this->logFile, $message, FILE_APPEND);
+    }
     
     protected function virusTotal()
     {
@@ -371,23 +383,30 @@ class Analyzer
                     
                     $this->decision();
                 }
-                try {
-        
-                    DB::table('tb_analysis_history')->insert([
-                        'history_id_uuid' => Uuid::uuid7()->toString(),
-                        'ip_id_uuid' => $history['ip_id_uuid'],
-                        'vt_score' => $this->data['scores']['virustotal'],
-                        'crowdsec_score' => $this->data['scores']['crowdsec'],
-                        'abuseip_score' => $this->data['scores']['abuseipdb'],
-                        'criminalip_score' => $this->data['scores']['criminalip'],
-                        'blocklist_score' => $this->data['scores']['blocklist'],
-                        'opencti_score' => $this->data['scores']['opencti'],
-                        'overall_score' => round($this->data['scores']['overall']['score'], 2),
-                        'decision' => json_encode($this->data['decision']),
-                        'created_at' => date("Y-m-d H:i:s")
-                    ]);
-                } catch (\Throwable $th) {
-                    $this->logError('DB_OPERATION', $th->getMessage());
+                if(empty($this->data['recentHistory']))
+                {
+                    try {
+            
+                        DB::table('tb_analysis_history')->insert([
+                            'history_id_uuid' => Uuid::uuid7()->toString(),
+                            'ip_id_uuid' => $history['ip_id_uuid'],
+                            'vt_score' => $this->data['scores']['virustotal'],
+                            'crowdsec_score' => $this->data['scores']['crowdsec'],
+                            'abuseip_score' => $this->data['scores']['abuseipdb'],
+                            'criminalip_score' => $this->data['scores']['criminalip'],
+                            'blocklist_score' => $this->data['scores']['blocklist'],
+                            'opencti_score' => $this->data['scores']['opencti'],
+                            'overall_score' => round($this->data['scores']['overall']['score'], 2),
+                            'decision' => json_encode($this->data['decision']),
+                            'created_at' => date("Y-m-d H:i:s")
+                        ]);
+                    } catch (\Throwable $th) {
+                        $this->logError('DB_OPERATION', $th->getMessage());
+                    }
+                }
+                else 
+                {
+                    $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
                 }
             } else {
                 try {
