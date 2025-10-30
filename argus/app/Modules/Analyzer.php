@@ -355,7 +355,7 @@ class Analyzer
                 $unblock = $createdAt + ($blocked * 86400);
                 if (strtotime("now") > $unblock) {
                     
-                    $this->data['scores']['overall'] = round(min($scoreOverall['score'] + 1, 100), 0);
+                    $this->data['scores']['overall']['score'] = round(min($scoreOverall['score'] + 1, 100), 0);
                     
                     $this->decision();
                     
