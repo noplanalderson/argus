@@ -355,7 +355,7 @@ class Analyzer
                 $unblock = $createdAt + ($blocked * 86400);
                 if (strtotime("now") > $unblock) {
 
-                    $this->data['scores']['overall']['score'] = round(min($scoreOverall['score'] + 1, 100), 0);
+                    $this->data['scores']['overall'] = ['score' => round(min($scoreOverall['score'] + 1, 100), 0)];
 
                     $this->decision();
                     
@@ -382,7 +382,7 @@ class Analyzer
                         'criminalip_score' => $this->data['scores']['criminalip'],
                         'blocklist_score' => $this->data['scores']['blocklist'],
                         'opencti_score' => $this->data['scores']['opencti'],
-                        'overall_score' => round($scoreOverall['score'], 2),
+                        'overall_score' => round($this->data['scores']['overall']['score'], 2),
                         'decision' => json_encode($this->data['decision']),
                         'created_at' => date("Y-m-d H:i:s")
                     ]);
