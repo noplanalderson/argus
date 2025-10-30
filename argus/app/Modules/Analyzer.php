@@ -354,9 +354,9 @@ class Analyzer
                 $this->data['id'] = $history['ip_id_uuid'];
                 $unblock = $createdAt + ($blocked * 86400);
                 if (strtotime("now") > $unblock) {
-                    
-                    $this->data['scores']['overall']['score'] = round(min($scoreOverall['score'] + 1, 100), 0);
-                    
+
+                    $this->data['scores']['overall'] = round(min($scoreOverall['score'] + 1, 100), 0);
+
                     $this->decision();
                     
                     // DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
