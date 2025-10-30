@@ -254,12 +254,11 @@ class Analyzer
 
     protected function ipInfo()
     {
+        $this->data['ip_info'] = ['isp' => 'N/A', 'country' => 'N/A', 'city' => 'N/A'];
         if(isset($this->reports['ipapi'])) {
             if($this->reports['ipapi']['success'] == true) {
-                $this->data['ip_info'] = $this->reports['ipapi']['results'] ?? [];
+                $this->data['ip_info'] = $this->reports['ipapi']['results'];
             }
-        } else {
-            $this->data['ip_info'] = ['isp' => 'N/A', 'country' => 'N/A', 'city' => 'N/A'];
         }
         
         $this->data['ip_info']['isPublic'] = checkIPType($this->reports['observable']);
