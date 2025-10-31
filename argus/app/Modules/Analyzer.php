@@ -319,21 +319,31 @@ class Analyzer
         }
     }
 
-    protected function decision()
+    protected function decision($previousBlock = false)
     {
-        if($this->data['scores']['overall']['score'] < 50 && $this->frequency >= 8) {
-            // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
-            $decision = '7d';
-        } elseif($this->data['scores']['overall']['score'] < 15) {
-            $decision = false;
-        } elseif($this->data['scores']['overall']['score'] >= 15 && $this->data['scores']['overall']['score'] < 30) {
+        if($previousBlock === 0) {
             $decision = '1d';
-        } elseif($this->data['scores']['overall']['score'] >= 30 && $this->data['scores']['overall']['score'] < 50) {
+        } elseif($previousBlock === '1d') {
             $decision = '3d';
-        } elseif($this->data['scores']['overall']['score'] >= 50 && $this->data['scores']['overall']['score'] < 70) {
+        } elseif($previousBlock === '3d') {
             $decision = '7d';
-        } else {
+        } elseif($previousBlock === '7d') {
             $decision = 'permanent';
+        } else {
+            if($this->data['scores']['overall']['score'] < 50 && $this->frequency >= 8) {
+                // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
+                $decision = '7d';
+            } elseif($this->data['scores']['overall']['score'] < 15) {
+                $decision = false;
+            } elseif($this->data['scores']['overall']['score'] >= 15 && $this->data['scores']['overall']['score'] < 30) {
+                $decision = '1d';
+            } elseif($this->data['scores']['overall']['score'] >= 30 && $this->data['scores']['overall']['score'] < 50) {
+                $decision = '3d';
+            } elseif($this->data['scores']['overall']['score'] >= 50 && $this->data['scores']['overall']['score'] < 70) {
+                $decision = '7d';
+            } else {
+                $decision = 'permanent';
+            }
         }
 
         $this->data['decision'] = array_merge($this->data['decision'], ['abuse_report' => true, 'blockmode' => $decision]);
@@ -367,22 +377,20 @@ class Analyzer
                 $unblock = $createdAt + ($blocked * 86400);
                 if (strtotime("now") > $unblock) {
 
-                    $this->data['scores']['overall'] = ['score' => round(min($scoreOverall['score'] + 1, 100), 0)];
-
-                    $this->decision();
-                    
-                    // DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
-                        //     'overall_score' => $this->data['scores']['overall'],
-                        //     'updated_at' => date("Y-m-d H:i:s")
-                        // ]);
+                    $this->data['scores']['overall'] = ['score' => round(min($history['overall_score'] + 1, 100), 0)];
+                    if($blocked === 'permanent') {
+                        $this->data['recentHistory'] = $history;
+                    }
+                    $this->decision($blocked);
                 }
                 else
                 {
                     $this->data['recentHistory'] = $history ?: null;
                     $this->data['scores']['overall'] = $scoreOverall;
                     
-                    $this->decision();
+                    $this->data['decision'] = $history['decision'];
                 }
+
                 if(empty($this->data['recentHistory']))
                 {
                     try {
@@ -406,7 +414,17 @@ class Analyzer
                 }
                 else 
                 {
-                    $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
+                    if($this->frequency > 7 && $this->data['scores']['overall']['score'] < 50) {
+                        $this->decision();
+
+                        DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
+                            'decision' => json_encode($this->data['decision']),
+                            'updated_at' => date("Y-m-d H:i:s")
+                        ]);
+                        $this->data['recentHistory'] = null;
+                    } else {
+                        $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
+                    }
                 }
             } else {
                 try {
