@@ -421,7 +421,8 @@ class Analyzer
                             'decision' => json_encode($this->data['decision']),
                             'updated_at' => date("Y-m-d H:i:s")
                         ]);
-                        $this->data['recentHistory'] = null;
+                        
+                        $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
                     } else {
                         $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
                     }
