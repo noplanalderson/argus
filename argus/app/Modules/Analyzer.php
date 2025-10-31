@@ -423,6 +423,7 @@ class Analyzer
                         ]);
                         
                         $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
+                        
                     } else {
                         $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
                     }
