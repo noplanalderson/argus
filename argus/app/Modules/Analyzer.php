@@ -485,7 +485,36 @@ class Analyzer
             $history = DB::table('tb_file_hash')->select('*')->where('file_hash', $this->reports['observable'])->first();
 
             if (!empty($history['hash_id'])) {
-                $this->data['recentHistory'] = $history ?: null;
+                
+                $lastAnalysis   = strtotime($history['created_at']);
+                $reanalyzeTime  = $_ENV['FORCE_REANALYZE'] * 24 * 60 * 60;
+                $unblock        = $lastAnalysis + $reanalyzeTime;
+
+                if (strtotime("now") > $unblock) {
+                    $hashId = Uuid::uuid7()->toString();
+                    $this->data['id'] = $hashId;
+                    try {
+                        DB::table(table: 'tb_file_hash')->insert([
+                            'hash_id' => $hashId,
+                            'file_hash' => $this->reports['observable'],
+                            'observable_name' => $this->reports['observable'],
+                            'classification' => json_encode($this->data['classification']),
+                            'vt_score' => $this->data['scores']['virustotal'],
+                            'mb_score' => $this->data['scores']['malware_bazaar'],
+                            'yara_score' => $this->data['scores']['yaraify'],
+                            'malprobe_score' => $this->data['scores']['malprobe'],
+                            'opencti_score' => $this->data['scores']['opencti'],
+                            'overall_score' => round($scoreOverall['score'], 2),
+                            'decision' => json_encode($this->data['decision']),
+                            'created_at' => date("Y-m-d H:i:s")
+                        ]);
+                    } catch (\Throwable $th) {
+                        $this->logError('DB_OPERATION', $th->getMessage());
+                    }
+                    $this->data['recentHistory'] = null;
+                } else {
+                    $this->data['recentHistory'] = $history;
+                }
             } else {
                 $hashId = Uuid::uuid7()->toString();
                 $this->data['id'] = $hashId;
