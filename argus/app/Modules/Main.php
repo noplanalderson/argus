@@ -59,14 +59,15 @@ class Main
                     break;
 
                 case 'check':
-                    $ip = $this->request->get('ip');
-                    $checkIP = new \App\Modules\CheckIP($ip);
-                    $status = $checkIP->check();
+                    $observable = $this->request->get('observable');
+                    $observableType = filter_var($observable, FILTER_VALIDATE_IP) ? 'ip' : 'hash';
+                    $checkObservable = new \App\Modules\CheckObservable($observable, $observableType);
+                    $status = $checkObservable->check();
                     setJSON([
                         'code' => 200,
                         'error' => null,
                         'message' => "Ok",
-                        'results' => ['ip_address' => $ip, 'status' => $status]
+                        'results' => ['observable' => $observable, 'status' => $status]
                     ], 200);
                     break;
                 
@@ -175,13 +176,72 @@ class Main
                         'title' => "ARGUS",
                         'description' => "Argus (Adaptive Reputation & Guarding Unified System) based on Multiple Threat Intelligence Source and Blocklist with Automatic IP Blocker to Sangfor NGFW or Mikrotik",
                         'author' => "Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>",
-                        'version' => "2.0.0",
-                        'availablePath' => [
-                            '[GET] /home',
-                            '[POST] /analyze',
-                            '[POST] /action',
-                            '[POST] /yeti',
-                            '[POST] /yeti_add',
+                        'version' => "2.2.0",
+                        'endpoints' => [
+                            [
+                                'method' => 'GET',
+                                'path' => '/home',
+                                'description' => 'Homepage endpoint',
+                                'params' => []
+                            ],
+                            [
+                                'method' => 'GET', 
+                                'path' => '/check',
+                                'description' => 'Check observable status',
+                                'params' => [
+                                    'observable' => 'IP address or file hash'
+                                ]
+                            ],
+                            [
+                                'method' => 'POST',
+                                'path' => '/analyze',
+                                'description' => 'Analyze observable threat score',
+                                'params' => [
+                                    'observable' => 'IP address or file hash',
+                                    'frequency' => 'Number of occurrences (optional)'
+                                ]
+                            ],
+                            [
+                                'method' => 'POST',
+                                'path' => '/action',
+                                'description' => 'Block/unblock IP in firewall', 
+                                'params' => [
+                                    'blockmode' => 'permanent/temporary',
+                                    'ip' => 'IP address to block/unblock',
+                                    'action' => 'block/unblock'
+                                ]
+                            ],
+                            [
+                                'method' => 'POST',
+                                'path' => '/blocklist',
+                                'description' => 'Get blocked IP list',
+                                'params' => [
+                                    'date_start' => 'Start date',
+                                    'date_end' => 'End date',
+                                    'limit' => 'Number of records (default: 10)',
+                                    'offset' => 'Offset for pagination (default: 0)'
+                                ]
+                            ],
+                            [
+                                'method' => 'POST', 
+                                'path' => '/jobs',
+                                'description' => 'Get job history',
+                                'params' => [
+                                    'date_start' => 'Start date',
+                                    'date_end' => 'End date', 
+                                    'limit' => 'Number of records (default: 10)',
+                                    'offset' => 'Offset for pagination (default: 0)'
+                                ]
+                            ],
+                            [
+                                'method' => 'POST',
+                                'path' => '/yeti',
+                                'description' => 'Get observable from YETI',
+                                'params' => [
+                                    'observable' => 'IP address or file hash',
+                                    'type' => 'Observable type'
+                                ]
+                            ]
                         ]
                     ], 200);
                     break;

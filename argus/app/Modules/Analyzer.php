@@ -373,8 +373,8 @@ class Analyzer
                 $history['decision'] = json_decode($history['decision'], true);
                 $createdAt = strtotime($history['created_at']);
                 $blocked = (int)$history['decision']['blockmode'];
-                $this->data['id'] = $history['ip_id_uuid'];
                 $unblock = $createdAt + ($blocked * 86400);
+                $this->data['id'] = $history['ip_id_uuid'];
                 if (strtotime("now") > $unblock) {
 
                     $this->data['scores']['overall'] = ['score' => round(min($history['overall_score'] + 1, 100), 0)];
@@ -423,7 +423,7 @@ class Analyzer
                         ]);
                         
                         $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
-                        
+
                     } else {
                         $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
                     }
@@ -484,7 +484,7 @@ class Analyzer
 
             $history = DB::table('tb_file_hash')->select('*')->where('file_hash', $this->reports['observable'])->first();
 
-            if ($history) {
+            if (!empty($history['hash_id'])) {
                 $this->data['recentHistory'] = $history ?: null;
             } else {
                 $hashId = Uuid::uuid7()->toString();
