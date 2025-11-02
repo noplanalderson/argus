@@ -25,10 +25,10 @@ class CheckObservable
             $history = DB::table('tb_analysis_history')->select('tb_analysis_history.*, ip_address')
                                 ->join('tb_ip_address', 'tb_ip_address.ip_id_uuid = tb_analysis_history.ip_id_uuid', 'inner')
                                 ->where('ip_address', '=', $this->observable)->orderBy('tb_analysis_history.created_at', 'desc')->first();
-            $decision = json_decode($history['decision'], true);
-
+                                
             if(!empty($history['history_id_uuid']))
             {
+                $decision = json_decode($history['decision'], true);
                 $blocked        = (int)$decision['blockmode'];
                 $lastAnalysis   = strtotime($history['created_at']);
                 $unblock        = $lastAnalysis + ($blocked * 86400);
