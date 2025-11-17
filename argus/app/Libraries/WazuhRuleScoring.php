@@ -67,7 +67,7 @@ class WazuhRuleScoring
     private function calculateGroupScore(): float
     {
         $groups = $this->rule['groups'] ?? [];
-        $groups = in_array(['recon', 'path_traversal', 'web_scan'], $groups) ? ['recon'] : $groups;
+        $groups = !empty(array_intersect(['recon', 'path_traversal', 'web_scan'], $groups)) ? ['recon'] : $groups;
         $groupScores = [
             'malware'               => 1.0,
             'yara'                  => 1.0,
