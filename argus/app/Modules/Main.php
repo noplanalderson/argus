@@ -184,7 +184,7 @@ class Main
                         'title' => "ARGUS",
                         'description' => "Argus (Adaptive Reputation & Guarding Unified System) based on Multiple Threat Intelligence Source and Blocklist with Automatic IP Blocker to Sangfor NGFW or Mikrotik",
                         'author' => "Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>",
-                        'version' => "2.2.1",
+                        'version' => "2.3.0",
                         'endpoints' => [
                             [
                                 'method' => 'GET',
