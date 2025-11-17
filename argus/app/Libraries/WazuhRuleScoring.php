@@ -85,6 +85,7 @@ class WazuhRuleScoring
             'bruteforce'            => 0.6,
             'recon'                 => 0.5,
             'spam'                  => 0.3,
+            'firewall_drop'         => 0.3,
             'authentication_failures'=> 0.1
         ];
         $score = 0.0;
