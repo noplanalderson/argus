@@ -415,9 +415,9 @@ class Analyzer
                     {
                         $this->data['recentHistory'] = $history ?: null;
                         $this->data['scores']['overall'] = $scoreOverall;
+                        $this->decision();
 
                         if($this->wazuhRule['frequency'] > 7 && $this->data['scores']['overall']['score'] > ($history['overall_score'] ?? 0)) {
-                            $this->decision();
 
                             DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
                                 'wazuh_score' => round($this->data['scores']['overall']['wazuh_rule_score'], 2),
