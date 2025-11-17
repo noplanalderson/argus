@@ -14,32 +14,16 @@ class AdaptiveSAW
     protected $weights = [];
     protected $scores = [];
     protected $criteriaSuccess = [];
-    // protected array $weights = [
-    //     'hash' => [
-    //         'virustotal' => 0.30,
-    //         'yaraify' => 0.05,
-    //         'malware_bazaar' => 0.15,
-    //         'malprobe' => 0.25,
-    //         'opencti' => 0.25
-    //     ],
-    //     'ip' => [
-    //         'virustotal' => 0.05,
-    //         'blocklist' => 0.25,
-    //         'abuseipdb' => 0.20,
-    //         'crowdsec' => 0.15,
-    //         'criminalip' => 0.15,
-    //         'opencti' => 0.20
-    //     ]
-    // ];
-
     protected $adjustedWeights = [];
+    protected $wazuhRule = [];
 
-    public function __construct($scores, $weights, $criteriaSuccess)
+    public function __construct($scores, $weights, $criteriaSuccess, $wazuhRule = [])
     {
         $this->scores = $scores;
         $this->weights = $weights;
         $this->criteriaSuccess = $criteriaSuccess;
         $this->adjustedWeights = $this->weights;
+        $this->wazuhRule = $wazuhRule;
     }
 
     protected function weightAdjustment()
@@ -69,15 +53,22 @@ class AdaptiveSAW
     {
         $this->weightAdjustment();
 
-        $scoreOverall = 0;
+        $tipScore = 0;
         foreach ($this->adjustedWeights as $key => $weight) {
             if (!empty($this->criteriaSuccess[$key])) {
-                $scoreOverall += ($this->scores[$key] * $weight);
+                $tipScore += ($this->scores[$key] * $weight);
             }
         }
 
+        $wazuhScore = new WazuhRuleScoring($this->wazuhRule);
+        $wazuhRuleScore = ($wazuhScore->scoring() / 1.0) * 100;
+
+        $scoreOverall = ($tipScore * 0.4) + ($wazuhRuleScore * 0.6);
+
         return [
             'score' => round($scoreOverall, 2),
+            'wazuh_rule_score' => round($wazuhRuleScore, 2),
+            'tip_score' => round($tipScore, 2),
             'weights' => [$this->adjustedWeights, $this->criteriaSuccess]
         ];
     }

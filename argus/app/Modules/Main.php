@@ -114,7 +114,15 @@ class Main
                 case 'analyze':
                     $observable = $this->request->post('observable');
                     $frequency = $this->request->post('frequency', 0);
-
+                    $groups = $this->request->post('groups', []);
+                    $responseCode = $this->request->post('response_code', 0);
+                    $level = $this->request->post('level', 0);
+                    $wazuhRule = [
+                        'groups' => $groups,
+                        'response_code' => $responseCode,
+                        'frequency' => $frequency,
+                        'level' => $level
+                    ];
                     // Validate if $observable is a valid IP or SHA1
                     if (
                         !filter_var($observable, FILTER_VALIDATE_IP) &&
@@ -136,7 +144,7 @@ class Main
                     $agg = new ArgusAggregator($observable, $sources);
                     $results = $agg->run();
 
-                    $analyzer = new Analyzer($results, $type, $frequency);
+                    $analyzer = new Analyzer($results, $type, $wazuhRule);
                     $analyzerResults = $analyzer->scoring()->exec();
 
                     setJSON([

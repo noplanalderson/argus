@@ -4,6 +4,7 @@ use App\Config\Database;
 use App\Libraries\CriminalIPScoring;
 use App\Libraries\AdaptiveSAW;
 use App\Libraries\MalwareBazaarScoring;
+use App\Libraries\WazuhRuleScoring;
 use App\Cores\DB;
 use Ramsey\Uuid\Uuid;
 /**
@@ -67,24 +68,24 @@ class Analyzer
             'opencti' => 0.25
         ],
         'ip' => [
-            'virustotal' => 0.05,
-            'blocklist' => 0.25,
-            'abuseipdb' => 0.20,
+            'virustotal' => 0.10,
+            'blocklist' => 0.30,
+            'abuseipdb' => 0.30,
             'crowdsec' => 0.15,
-            'criminalip' => 0.15,
-            'opencti' => 0.20
+            'criminalip' => 0.10,
+            'opencti' => 0.05
         ]
     ];
 
     protected string $logFile;
     protected string $type = '';
-    protected int $frequency = 0;
+    protected array $wazuhRule = ['frequency' => 1, 'response_code' => 0, 'rule_groups' => []];
 
-    public function __construct(array $reports, $type, $frequency = 0)
+    public function __construct(array $reports, string $type, array $wazuhRule = [])
     {
         $this->reports = $reports;
         $this->type = $type;
-        $this->frequency = $frequency;
+        $this->wazuhRule = $wazuhRule;
         $this->data['observable'] = $reports['observable'] ?? null;
         $this->logFile = ROOTPATH . 'logs/argus_tip.log';
     }
@@ -321,30 +322,30 @@ class Analyzer
 
     protected function decision($previousBlock = false)
     {
-        if($previousBlock === 0) {
-            $decision = '1d';
-        } elseif($previousBlock === '1d') {
-            $decision = '3d';
-        } elseif($previousBlock === '3d') {
+        // if($previousBlock === 0) {
+        //     $decision = '1d';
+        // } elseif($previousBlock === '1d') {
+        //     $decision = '3d';
+        // } elseif($previousBlock === '3d') {
+        //     $decision = '7d';
+        // } elseif($previousBlock === '7d') {
+        //     $decision = 'permanent';
+        // } else {
+        if($this->data['scores']['overall']['score'] < 50 && $this->wazuhRule['frequency'] >= 8) {
+            // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
             $decision = '7d';
-        } elseif($previousBlock === '7d') {
-            $decision = 'permanent';
+        } elseif($this->data['scores']['overall']['score'] < 15) {
+            $decision = false;
+        } elseif($this->data['scores']['overall']['score'] >= 15 && $this->data['scores']['overall']['score'] < 30) {
+            $decision = '1d';
+        } elseif($this->data['scores']['overall']['score'] >= 30 && $this->data['scores']['overall']['score'] < 50) {
+            $decision = '3d';
+        } elseif($this->data['scores']['overall']['score'] >= 50 && $this->data['scores']['overall']['score'] < 70) {
+            $decision = '7d';
         } else {
-            if($this->data['scores']['overall']['score'] < 50 && $this->frequency >= 8) {
-                // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
-                $decision = '7d';
-            } elseif($this->data['scores']['overall']['score'] < 15) {
-                $decision = false;
-            } elseif($this->data['scores']['overall']['score'] >= 15 && $this->data['scores']['overall']['score'] < 30) {
-                $decision = '1d';
-            } elseif($this->data['scores']['overall']['score'] >= 30 && $this->data['scores']['overall']['score'] < 50) {
-                $decision = '3d';
-            } elseif($this->data['scores']['overall']['score'] >= 50 && $this->data['scores']['overall']['score'] < 70) {
-                $decision = '7d';
-            } else {
-                $decision = 'permanent';
-            }
+            $decision = 'permanent';
         }
+        // }
 
         $this->data['decision'] = array_merge($this->data['decision'], ['abuse_report' => true, 'blockmode' => $decision]);
     }
@@ -361,7 +362,12 @@ class Analyzer
             $this->isBlacklisted();
             $this->opencti();
 
-            $adaptiveSAW = new AdaptiveSAW($this->data['scores'], $this->weight[$this->type], $this->successResources[$this->type]);
+            $adaptiveSAW = new AdaptiveSAW(
+                $this->data['scores'], 
+                $this->weight[$this->type], 
+                $this->successResources[$this->type],
+                $this->wazuhRule
+            );
             $scoreOverall = $adaptiveSAW->scoring();
 
             // Check IP histories
@@ -372,62 +378,100 @@ class Analyzer
             if (!empty($history)) {
                 $history['decision'] = json_decode($history['decision'], true);
                 $createdAt = strtotime($history['created_at']);
-                $blocked = (int)$history['decision']['blockmode'];
-                $unblock = $createdAt + ($blocked * 86400);
+                $blocked = $history['decision']['blockmode'];
                 $this->data['id'] = $history['ip_id_uuid'];
-                if (strtotime("now") > $unblock) {
-
-                    $this->data['scores']['overall'] = ['score' => round(min($history['overall_score'] + 1, 100), 0)];
-                    if($blocked === 'permanent') {
-                        $this->data['recentHistory'] = $history;
-                    }
-                    $this->decision($blocked);
-                }
-                else
-                {
-                    $this->data['recentHistory'] = $history ?: null;
-                    $this->data['scores']['overall'] = $scoreOverall;
-                    
+                if($blocked === 'permanent') {
+                    $this->data['recentHistory'] = $history;
                     $this->data['decision'] = $history['decision'];
-                }
+                } else {
+                    $unblock = $createdAt + ((int)$blocked * 86400);
 
-                if(empty($this->data['recentHistory']))
-                {
-                    try {
-            
-                        DB::table('tb_analysis_history')->insert([
-                            'history_id_uuid' => Uuid::uuid7()->toString(),
-                            'ip_id_uuid' => $history['ip_id_uuid'],
-                            'vt_score' => $this->data['scores']['virustotal'],
-                            'crowdsec_score' => $this->data['scores']['crowdsec'],
-                            'abuseip_score' => $this->data['scores']['abuseipdb'],
-                            'criminalip_score' => $this->data['scores']['criminalip'],
-                            'blocklist_score' => $this->data['scores']['blocklist'],
-                            'opencti_score' => $this->data['scores']['opencti'],
-                            'overall_score' => round($this->data['scores']['overall']['score'], 2),
-                            'decision' => json_encode($this->data['decision']),
-                            'created_at' => date("Y-m-d H:i:s")
-                        ]);
-                    } catch (\Throwable $th) {
-                        $this->logError('DB_OPERATION', $th->getMessage());
-                    }
-                }
-                else 
-                {
-                    if($this->frequency > 7 && $this->data['scores']['overall']['score'] < 50) {
+                    if (strtotime("now") > $unblock) {
+    
+                        $this->data['scores']['overall'] = ['score' => round(min($history['overall_score'] + 1, 100), 0)];
                         $this->decision();
+                        try {
+            
+                            DB::table('tb_analysis_history')->insert([
+                                'history_id_uuid' => Uuid::uuid7()->toString(),
+                                'ip_id_uuid' => $history['ip_id_uuid'],
+                                'vt_score' => $this->data['scores']['virustotal'],
+                                'crowdsec_score' => $this->data['scores']['crowdsec'],
+                                'abuseip_score' => $this->data['scores']['abuseipdb'],
+                                'criminalip_score' => $this->data['scores']['criminalip'],
+                                'blocklist_score' => $this->data['scores']['blocklist'],
+                                'opencti_score' => $this->data['scores']['opencti'],
+                                'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
+                                'tip_score' => round($scoreOverall['tip_score'], 2),
+                                'overall_score' => round($scoreOverall['score'], 2),
+                                'decision' => json_encode($this->data['decision']),
+                                'created_at' => date("Y-m-d H:i:s")
+                            ]);
+                        } catch (\Throwable $th) {
+                            $this->logError('DB_OPERATION', $th->getMessage());
+                        }
+                    }
+                    else
+                    {
+                        $this->data['recentHistory'] = $history ?: null;
+                        $this->data['scores']['overall'] = $scoreOverall;
 
-                        DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
-                            'decision' => json_encode($this->data['decision']),
-                            'updated_at' => date("Y-m-d H:i:s")
-                        ]);
-                        
-                        $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
+                        if($this->wazuhRule['frequency'] > 7 && $this->data['scores']['overall']['score'] > ($history['overall_score'] ?? 0)) {
+                            $this->decision();
 
-                    } else {
-                        $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
+                            DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
+                                'wazuh_score' => round($this->data['scores']['overall']['wazuh_rule_score'], 2),
+                                'tip_score' => round($this->data['scores']['overall']['tip_score'], 2),
+                                'overall_score' => round($this->data['scores']['overall']['score'], 2),
+                                'decision' => json_encode($this->data['decision']),
+                                'updated_at' => date("Y-m-d H:i:s")
+                            ]);
+                            
+                            $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
+
+                        } else {
+                            $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
+                        }
                     }
                 }
+
+                // if(empty($this->data['recentHistory']))
+                // {
+                //     try {
+            
+                //         DB::table('tb_analysis_history')->insert([
+                //             'history_id_uuid' => Uuid::uuid7()->toString(),
+                //             'ip_id_uuid' => $history['ip_id_uuid'],
+                //             'vt_score' => $this->data['scores']['virustotal'],
+                //             'crowdsec_score' => $this->data['scores']['crowdsec'],
+                //             'abuseip_score' => $this->data['scores']['abuseipdb'],
+                //             'criminalip_score' => $this->data['scores']['criminalip'],
+                //             'blocklist_score' => $this->data['scores']['blocklist'],
+                //             'opencti_score' => $this->data['scores']['opencti'],
+                //             'overall_score' => round($this->data['scores']['overall']['score'], 2),
+                //             'decision' => json_encode($this->data['decision']),
+                //             'created_at' => date("Y-m-d H:i:s")
+                //         ]);
+                //     } catch (\Throwable $th) {
+                //         $this->logError('DB_OPERATION', $th->getMessage());
+                //     }
+                // }
+                // else 
+                // {
+                //     if($this->wazuhRule['frequency'] > 7 && $this->data['scores']['overall']['score'] < 50) {
+                //         $this->decision();
+
+                //         DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
+                //             'decision' => json_encode($this->data['decision']),
+                //             'updated_at' => date("Y-m-d H:i:s")
+                //         ]);
+                        
+                //         $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
+
+                //     } else {
+                //         $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
+                //     }
+                // }
             } else {
                 try {
                     $this->data['scores']['overall'] = $scoreOverall;
@@ -457,6 +501,8 @@ class Analyzer
                         'criminalip_score' => $this->data['scores']['criminalip'],
                         'blocklist_score' => $this->data['scores']['blocklist'],
                         'opencti_score' => $this->data['scores']['opencti'],
+                        'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
+                        'tip_score' => round($scoreOverall['tip_score'], 2),
                         'overall_score' => round($scoreOverall['score'], 2),
                         'decision' => json_encode($this->data['decision']),
                         'created_at' => date("Y-m-d H:i:s")
@@ -477,7 +523,12 @@ class Analyzer
             $this->opencti();
 
             
-            $adaptiveSAW = new AdaptiveSAW($this->data['scores'], $this->weight[$this->type], $this->successResources[$this->type]);
+            $adaptiveSAW = new AdaptiveSAW(
+                $this->data['scores'], 
+                $this->weight[$this->type], 
+                $this->successResources[$this->type],
+                $this->wazuhRule
+            );
             $scoreOverall = $adaptiveSAW->scoring();
 
             $this->data['scores']['overall'] = $scoreOverall;
@@ -504,6 +555,8 @@ class Analyzer
                             'yara_score' => $this->data['scores']['yaraify'],
                             'malprobe_score' => $this->data['scores']['malprobe'],
                             'opencti_score' => $this->data['scores']['opencti'],
+                            'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
+                            'tip_score' => round($scoreOverall['tip_score'], 2),
                             'overall_score' => round($scoreOverall['score'], 2),
                             'decision' => json_encode($this->data['decision']),
                             'created_at' => date("Y-m-d H:i:s")
@@ -529,6 +582,8 @@ class Analyzer
                         'yara_score' => $this->data['scores']['yaraify'],
                         'malprobe_score' => $this->data['scores']['malprobe'],
                         'opencti_score' => $this->data['scores']['opencti'],
+                        'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
+                        'tip_score' => round($scoreOverall['tip_score'], 2),
                         'overall_score' => round($scoreOverall['score'], 2),
                         'decision' => json_encode($this->data['decision']),
                         'created_at' => date("Y-m-d H:i:s")

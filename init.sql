@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS tb_analysis_history (
     criminalip_score FLOAT NOT NULL,
     blocklist_score FLOAT NOT NULL,
     opencti_score FLOAT NULL,
+    tip_score FLOAT NULL,
+    wazuh_score FLOAT NULL,
     overall_score FLOAT NOT NULL,
     decision JSON NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
