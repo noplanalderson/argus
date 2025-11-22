@@ -81,13 +81,15 @@ class WazuhRuleScoring
             'command_injection'     => 0.8,
             'dos'                   => 0.7,
             'content_violation'     => 0.7,
+            'credential_breach'     => 0.7,
             'sql_injection'         => 0.7,
             'xss'                   => 0.7,
             'bruteforce'            => 0.6,
             'recon'                 => 0.5,
             'spam'                  => 0.5,
             'firewall_drop'         => 0.5,
-            'authentication_failures'=> 0.5
+            'authentication_failures'=> 0.5,
+            'sensitive_file'        => 0.5
         ];
         $score = 0.0;
         $countGroups = 0;
