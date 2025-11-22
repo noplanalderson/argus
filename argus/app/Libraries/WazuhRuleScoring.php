@@ -29,20 +29,18 @@ class WazuhRuleScoring
     private function calculateResponseCode()
     {
         $valid_response = [200, 201, 202, 204];
-        $redirect_response = [300, 301, 302, 304];
+        $redirect_response = [300, 301, 302, 303, 304];
         $invalid_response = [400, 401, 403, 404];
-        $error_response = [500, 502, 503];
+        $error_response = [500, 502, 503,504];
         
         if(in_array($this->response_code, $valid_response)) {
             $score = 1.0;
         } elseif(in_array($this->response_code, $redirect_response)) {
             $score = 0.5;
-        } elseif(in_array($this->response_code, $invalid_response)) {
-            $score = 0.3;
         } elseif(in_array($this->response_code, $error_response)) {
             $score = 0.8;
-        } else {
-            $score = in_array('yara', $this->rule['groups']) ? 1.0 : 0.0;
+        } elseif(in_array($this->response_code, $invalid_response)) {
+            $score = 0.3;
         }
 
         return $score;
@@ -53,6 +51,9 @@ class WazuhRuleScoring
         $level = $this->rule['level'] ?? 0;
         $severityScore = $level / 15;
         // Calculate rule level with response code
+        if(!in_array('web', $this->rule['groups'] ?? [])) {
+            return $severityScore;
+        }
         return min(($this->calculateResponseCode() + $severityScore) / 2, 1.0);
     }
 
@@ -84,9 +85,9 @@ class WazuhRuleScoring
             'xss'                   => 0.7,
             'bruteforce'            => 0.6,
             'recon'                 => 0.5,
-            'spam'                  => 0.3,
-            'firewall_drop'         => 0.3,
-            'authentication_failures'=> 0.1
+            'spam'                  => 0.5,
+            'firewall_drop'         => 0.5,
+            'authentication_failures'=> 0.5
         ];
         $score = 0.0;
         $countGroups = 0;
