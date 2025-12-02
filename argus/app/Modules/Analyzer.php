@@ -381,7 +381,7 @@ class Analyzer
                 $blocked = $history['decision']['blockmode'];
                 $this->data['id'] = $history['ip_id_uuid'];
                 if($blocked === 'permanent') {
-                    $this->data['scores']['overall'] = $history['overall_score'];
+                    $this->data['scores']['overall']['score'] = $history['overall_score'];
                     $this->data['recentHistory'] = $history;
                     $this->data['decision'] = $history['decision'];
                 } else {
