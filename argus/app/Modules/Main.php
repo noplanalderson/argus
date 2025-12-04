@@ -76,8 +76,8 @@ class Main
 
                     if($_ENV['FW_TYPE'] == 'SANGFOR') {
                         $sangfor = new \App\Libraries\Sangfor;
-                        $sangfor->login();
-                        $sangfor->keepalive();
+                        // $sangfor->login();
+                        // $sangfor->keepalive();
 
                         // $blacklist = $sangfor->getBlacklist(10);
                         if($post['blockmode'] == 'permanent') {

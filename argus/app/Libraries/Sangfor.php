@@ -9,6 +9,7 @@ class Sangfor
     protected $client;
     protected $headers;
     protected $token = '';
+    protected $isLoggedIn = false;
 
     public function __construct()
     {
@@ -53,6 +54,46 @@ class Sangfor
         }
     }
 
+    // Helper untuk auto-retry dengan login
+    private function requestWithAuth(string $method, string $endpoint, array $params = [], int $retryCount = 0)
+    {
+        // Pastikan sudah login
+        if (!$this->isLoggedIn) {
+            $loginResult = $this->login();
+            if (!$loginResult['status']) {
+                return $loginResult;
+            }
+        }
+
+        // Tambahkan token ke header
+        $headers = array_merge(
+            $params['headers'] ?? $this->headers, 
+            ['Cookie' => "token={$this->token}"]
+        );
+        $params['headers'] = $headers;
+
+        // Eksekusi request
+        $res = $this->request($method, $endpoint, $params);
+
+        // Jika token invalid (1003) dan belum retry, login ulang dan coba lagi
+        if ($res['status'] && 
+            isset($res['data']['code']) && 
+            $res['data']['code'] == 1003 && 
+            $retryCount < 1) {
+            
+            $this->isLoggedIn = false;
+            $loginResult = $this->login();
+            
+            if ($loginResult['status']) {
+                return $this->requestWithAuth($method, $endpoint, $params, $retryCount + 1);
+            }
+            
+            return $loginResult;
+        }
+
+        return $res;
+    }
+
     public function login()
     {
         $body = json_encode([
@@ -69,6 +110,9 @@ class Sangfor
 
         if ($result['status'] && isset($result['data']['data']['loginResult']['token'])) {
             $this->token = $result['data']['data']['loginResult']['token'];
+            $this->isLoggedIn = true;
+        } else {
+            $this->isLoggedIn = false;
         }
 
         return $result;
@@ -76,56 +120,21 @@ class Sangfor
 
     public function keepalive()
     {
-        $headers = array_merge($this->headers, ['Cookie' => "token={$this->token}"]);
-
-        $res = $this->request('GET', 'api/v1/namespaces/public/keepalive', [
-            'headers' => $headers
-        ]);
-
-        if ($res['status'] && isset($res['data']['code']) && $res['data']['code'] == 1003) {
-            return $this->login();
-        }
-
-        return $res;
+        return $this->requestWithAuth('GET', 'api/v1/namespaces/public/keepalive');
     }
 
     public function getBlacklist(int $page)
     {
-        $headers = array_merge($this->headers, ['Cookie' => "token={$this->token}"]);
-
-        $res = $this->request('GET', "api/v1/namespaces/public/whiteblacklist?type=BLACK&_length=10&_start={$page}", [
-            'headers' => $headers
-        ]);
-
-        if (!$res['status']) {
-            return $this->login();
-        }
-
-        return $res;
+        return $this->requestWithAuth('GET', "api/v1/namespaces/public/whiteblacklist?type=BLACK&_length=10&_start={$page}");
     }
 
     public function getWhitelist(int $page)
     {
-        $headers = array_merge($this->headers, ['Cookie' => "token={$this->token}"]);
-
-        $res = $this->request('GET', "api/v1/namespaces/public/whiteblacklist?type=WHITE&_length=10&_start={$page}", [
-            'headers' => $headers
-        ]);
-
-        if (!$res['status']) {
-            return $this->login();
-        }
-
-        return $res;
+        return $this->requestWithAuth('GET', "api/v1/namespaces/public/whiteblacklist?type=WHITE&_length=10&_start={$page}");
     }
 
     public function createBlackWhite(array $data) 
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Cookie'       => "token={$this->token}"
-        ];
-
         $body = json_encode([
             'enable'      => $data['enable'],
             'type'        => $data['type'],
@@ -133,38 +142,26 @@ class Sangfor
             'description' => $data['description']
         ]);
 
-        return $this->request('POST', 'api/v1/namespaces/public/whiteblacklist', [
-            'headers' => $headers,
-            'body'    => $body
+        return $this->requestWithAuth('POST', 'api/v1/namespaces/public/whiteblacklist', [
+            'body' => $body
         ]);
     }
 
     public function tempBlock(array $data)
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Cookie'       => "token={$this->token}"
-        ];
-
         $body = json_encode([
             'ipType'    => 'SRC',
             'srcIP'     => [ $data['ip_address'] ],
             'blockTime' => $data['blockmode']
         ]);
 
-        return $this->request('POST', 'api/batch/v1/namespaces/public/blockip', [
-            'headers' => $headers,
-            'body'    => $body
+        return $this->requestWithAuth('POST', 'api/batch/v1/namespaces/public/blockip', [
+            'body' => $body
         ]);
     }
 
     public function deleteBlackWhite(array $data)
     {
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Cookie'       => "token={$this->token}"
-        ];
-
         $body = json_encode([
             'enable'      => $data['enable'],
             'type'        => $data['type'],
@@ -172,9 +169,8 @@ class Sangfor
             'description' => $data['description']
         ]);
 
-        return $this->request('DELETE', "api/v1/namespaces/public/whiteblacklist/{$data['url']}", [
-            'headers' => $headers,
-            'body'    => $body,
+        return $this->requestWithAuth('DELETE', "api/v1/namespaces/public/whiteblacklist/{$data['url']}", [
+            'body' => $body
         ]);
     }
 }
