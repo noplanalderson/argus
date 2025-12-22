@@ -43,3 +43,8 @@ function is_sha1(string $string): bool
 
     return false; 
 }
+
+function inRange($min, $max, $value)
+{
+    return $value >= $min && $value <= $max;
+}

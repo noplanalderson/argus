@@ -322,30 +322,53 @@ class Analyzer
 
     protected function decision($previousBlock = false)
     {
-        // if($previousBlock === 0) {
-        //     $decision = '1d';
-        // } elseif($previousBlock === '1d') {
-        //     $decision = '3d';
-        // } elseif($previousBlock === '3d') {
-        //     $decision = '7d';
-        // } elseif($previousBlock === '7d') {
-        //     $decision = 'permanent';
-        // } else {
-        if($this->data['scores']['overall']['score'] < 50 && $this->wazuhRule['frequency'] >= 8) {
-            // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
-            $decision = '7d';
-        } elseif($this->data['scores']['overall']['score'] < 15) {
-            $decision = false;
-        } elseif($this->data['scores']['overall']['score'] >= 15 && $this->data['scores']['overall']['score'] < 30) {
-            $decision = '1d';
-        } elseif($this->data['scores']['overall']['score'] >= 30 && $this->data['scores']['overall']['score'] < 50) {
-            $decision = '3d';
-        } elseif($this->data['scores']['overall']['score'] >= 50 && $this->data['scores']['overall']['score'] < 70) {
-            $decision = '7d';
-        } else {
-            $decision = 'permanent';
+        $wazuhScore = $this->data['scores']['overall']['wazuh_rule_score'] ?? 0;
+        $tipScore = $this->data['scores']['overall']['tip_score'] ?? 0;
+
+        if($tipScore < 15) {
+            if(inRange(90, 100, $wazuhScore))
+            {
+                $decision = '8h';
+            }
+            elseif(inRange(80, 89, $wazuhScore))
+            {
+                $decision = '4h';
+            }
+            elseif(inRange(70, 79, $wazuhScore))
+            {
+                $decision = '2h';
+            }
+            elseif(inRange(60, 69, $wazuhScore))
+            {
+                $decision = '1h';
+            } else{
+                $decision = '30m';
+            }
         }
-        // }
+        else
+        {
+            // if($previousBlock === 0) {
+            //     $decision = '1d';
+            // } elseif($previousBlock === '1d') {
+            //     $decision = '3d';
+            // } elseif($previousBlock === '3d') {
+            //     $decision = '7d';
+            // } elseif($previousBlock === '7d') {
+            //     $decision = 'permanent';
+            // } else {
+            if(inRange(50, 100, $this->data['scores']['overall']['score']) && $this->wazuhRule['frequency'] >= 8) {
+                // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
+                $decision = '7d';
+            } elseif(inRange(15, 29, $this->data['scores']['overall']['score'])) {
+                $decision = '1d';
+            } elseif(inRange(30, 49, $this->data['scores']['overall']['score'])) {
+                $decision = '3d';
+            } elseif(inRange(50, 69, $this->data['scores']['overall']['score'])) {
+                $decision = '7d';
+            } else {
+                $decision = 'permanent';
+            }
+        }
 
         $this->data['decision'] = array_merge($this->data['decision'], ['abuse_report' => true, 'blockmode' => $decision]);
     }
