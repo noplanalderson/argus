@@ -9,6 +9,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./argus:/var/www/html:ro  # Mount source code as read-only for nginx
+      - ./argus/logs/nginx:/var/log/nginx  # Mount logs directory for easier access
     depends_on:
       - php-fpm
     networks:
