@@ -330,18 +330,18 @@ class Analyzer
             {
                 $decision = '8h';
             }
-            elseif(inRange(80, 89, $wazuhScore))
+            elseif(inRange(80, 89.99, $wazuhScore))
             {
                 $decision = '4h';
             }
-            elseif(inRange(70, 79, $wazuhScore))
+            elseif(inRange(70, 79.99, $wazuhScore))
             {
                 $decision = '2h';
             }
-            elseif(inRange(60, 69, $wazuhScore))
+            elseif(inRange(60, 69.99, $wazuhScore))
             {
                 $decision = '1h';
-            } else{
+            } else {
                 $decision = '30m';
             }
         }
