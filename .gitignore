@@ -1,5 +1,6 @@
 argus/vendor
 argus/composer.lock
 argus/.env
-argus/logs/*
+argus/logs/*.log
+argus/logs/nginx/*.log
 .env
