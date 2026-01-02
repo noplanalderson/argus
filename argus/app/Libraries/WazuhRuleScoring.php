@@ -89,7 +89,8 @@ class WazuhRuleScoring
             'spam'                  => 0.5,
             'firewall_drop'         => 0.5,
             'authentication_failures'=> 0.5,
-            'sensitive_file'        => 0.5
+            'sensitive_file'        => 0.5,
+            'file_monitoring'       => 0.0
         ];
         $score = 0.0;
         $countGroups = 0;
