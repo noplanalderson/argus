@@ -356,7 +356,7 @@ class Analyzer
             // } elseif($previousBlock === '7d') {
             //     $decision = 'permanent';
             // } else {
-            if(inRange(50, 100, round($this->data['scores']['overall']['score'],2)) || $this->wazuhRule['frequency'] >= 8) {
+            if(inRange(15, 49.99, round($this->data['scores']['overall']['score'],2)) || $this->wazuhRule['frequency'] >= 8) {
                 // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
                 $decision = '7d';
             } elseif(inRange(15, 29.99, round($this->data['scores']['overall']['score'],2))) {
