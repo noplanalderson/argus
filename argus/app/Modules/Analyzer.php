@@ -412,7 +412,11 @@ class Analyzer
 
                     if (strtotime("now") > $unblock) {
     
-                        $this->data['scores']['overall'] = ['score' => round(min($history['overall_score'] + 1, 100), 0)];
+                        $this->data['scores']['overall'] = [
+                            'score' => round(min($history['overall_score'] + 1, 100), 0),
+                            'wazuh_rule_score' => $scoreOverall['wazuh_rule_score'],
+                            'tip_score' => $scoreOverall['tip_score']
+                        ];
                         $this->decision();
                         try {
             
