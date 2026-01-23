@@ -80,6 +80,7 @@ class WazuhRuleScoring
             'lfi'                   => 0.8,
             'rfi'                   => 0.8,
             'command_injection'     => 0.8,
+            'react2shell'           => 0.8,
             'dos'                   => 0.7,
             'content_violation'     => 0.7,
             'credential_breach'     => 0.7,
