@@ -73,6 +73,7 @@ class WazuhRuleScoring
             'malware'               => 1.0,
             'yara'                  => 1.0,
             'authentication_success'=> 0.9,
+            'persistent'            => 0.9,
             'webshell'              => 0.8,
             'seo_cloaking'          => 0.8,
             'ssrf'                  => 0.8,
