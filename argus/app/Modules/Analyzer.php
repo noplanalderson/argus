@@ -408,7 +408,17 @@ class Analyzer
                     $this->data['recentHistory'] = $history;
                     $this->data['decision'] = $history['decision'];
                 } else {
-                    $unblock = $createdAt + ((int)$blocked * 86400);
+                    // $unblock = $createdAt + ((int)$blocked * 86400);
+                    $blocked = preg_replace('/[0-9]+/', '', $blocked);
+                    $blockValue = (int)preg_replace('/[^0-9]/', '', $history['decision']['blockmode']);
+
+                    if ($blocked === 'm') {
+                        $unblock = $createdAt + ($blockValue * 60);
+                    } elseif ($blocked === 'h') {
+                        $unblock = $createdAt + ($blockValue * 3600);
+                    } else {
+                        $unblock = $createdAt + ($blockValue * 86400);
+                    }
 
                     if (strtotime("now") > $unblock) {
     
