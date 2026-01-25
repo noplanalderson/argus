@@ -325,7 +325,7 @@ class Analyzer
         $wazuhScore = $this->data['scores']['overall']['wazuh_rule_score'] ?? 0;
         $tipScore = $this->data['scores']['overall']['tip_score'] ?? 0;
 
-        if($tipScore < 15) {
+        if($tipScore < 15 && $previousBlock === false) {
             if(inRange(90, 100, $wazuhScore))
             {
                 $decision = '8h';
@@ -427,7 +427,7 @@ class Analyzer
                             'wazuh_rule_score' => $scoreOverall['wazuh_rule_score'],
                             'tip_score' => $scoreOverall['tip_score']
                         ];
-                        $this->decision();
+                        $this->decision(true);
                         try {
             
                             DB::table('tb_analysis_history')->insert([
