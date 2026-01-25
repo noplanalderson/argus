@@ -28,10 +28,21 @@ class CheckObservable
                                 
             if(!empty($history['history_id_uuid']))
             {
-                $decision = json_decode($history['decision'], true);
-                $blocked        = (int)$decision['blockmode'];
-                $lastAnalysis   = strtotime($history['created_at']);
-                $unblock        = $lastAnalysis + ($blocked * 86400);
+                $decision     = json_decode($history['decision'], true);
+                $blockMode    = $decision['blockmode'];
+                $lastAnalysis = strtotime($history['created_at']);
+                // $unblock        = $lastAnalysis + ($blocked * 86400);
+                
+                $blocked = preg_replace('/[0-9]+/', '', $blockMode);
+                $blockValue = (int)preg_replace('/[^0-9]/', '', $blockMode);
+
+                if ($blocked === 'm') {
+                    $unblock = $lastAnalysis + ($blockValue * 60);
+                } elseif ($blocked === 'h') {
+                    $unblock = $lastAnalysis + ($blockValue * 3600);
+                } else {
+                    $unblock = $lastAnalysis + ($blockValue * 86400);
+                }
 
                 if (strtotime("now") < $unblock) {
         
