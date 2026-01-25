@@ -441,7 +441,7 @@ class Analyzer
                                 'opencti_score' => $this->data['scores']['opencti'],
                                 'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
                                 'tip_score' => round($scoreOverall['tip_score'], 2),
-                                'overall_score' => round($scoreOverall['score'], 2),
+                                'overall_score' => $this->data['scores']['overall']['score'],
                                 'decision' => json_encode($this->data['decision']),
                                 'created_at' => date("Y-m-d H:i:s")
                             ]);
