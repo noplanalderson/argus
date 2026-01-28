@@ -29,9 +29,9 @@ class WazuhRuleScoring
     private function calculateResponseCode()
     {
         $valid_response = [200, 201, 202, 204];
-        $redirect_response = [300, 301, 302, 303, 304];
+        $redirect_response = [300, 301, 302, 303, 304, 307];
         $invalid_response = [400, 401, 403, 404];
-        $error_response = [500, 502, 503,504];
+        $error_response = [500, 502, 503, 504];
         
         if(in_array($this->response_code, $valid_response)) {
             $score = 1.0;
