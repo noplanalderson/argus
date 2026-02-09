@@ -23,18 +23,14 @@ RUN apt-get update && apt-get install -y \
         --with-jpeg \
     && docker-php-ext-install \
         bcmath \
-        ctype \
         curl \
         dom \
         fileinfo \
-        filter \
         gd \
-        hash \
         intl \
         mbstring \
         mysqli \
         opcache \
-        pdo \
         pdo_mysql \
         simplexml \
         xml \
