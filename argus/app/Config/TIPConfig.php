@@ -97,7 +97,7 @@ class TIPConfig
                 'method'  => 'POST',
                 'url'     => self::THREATBOOK_URL,
                 'headers' => [
-                    'Content-Type' => 'application/form-data'
+                    'Content-Type' => 'application/x-www-form-urlencoded'
                 ],
                 'body'    => fn($obs) => http_build_query([
                     'apikey' => $_ENV['THREATBOOK_API_KEY'] ?? '',
