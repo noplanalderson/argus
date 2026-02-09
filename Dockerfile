@@ -5,9 +5,29 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     cron \
-    libcurl4-openssl-dev \
     wget \
-    && docker-php-ext-install mysqli pdo_mysql curl dba sockets \
+    libcurl4-openssl-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libxml2-dev \
+    libonig-dev \
+    libssl-dev \
+    pkg-config \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+    && docker-php-ext-install \
+        mysqli \
+        gd \
+        bcmath \
+        xml \
+        dom \
+        mbstring \
+        pdo_mysql \
+        curl \
+        dba \
+        sockets \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
