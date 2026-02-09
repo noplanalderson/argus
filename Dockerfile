@@ -7,35 +7,28 @@ RUN apt-get update && apt-get install -y \
     git \
     unzip \
     cron \
-    wget \
-    pkg-config \
     libcurl4-openssl-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
     libxml2-dev \
-    libonig-dev \
+    wget \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    zlib1g-dev \
     libzip-dev \
-    libicu-dev \
-    libssl-dev \
-    && docker-php-ext-configure gd \
-        --with-freetype \
-        --with-jpeg \
+    libonig-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
-        bcmath \
-        curl \
-        dom \
-        fileinfo \
-        gd \
-        intl \
-        mbstring \
-        mysqli \
-        opcache \
-        pdo_mysql \
-        simplexml \
-        xml \
-        zip \
-        sockets \
+    mysqli \
+    gd \
+    bcmath \
+    xml \
+    dom \
+    mbstring \
+    pdo_mysql \
+    curl \
+    dba \
+    sockets \
+    zip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

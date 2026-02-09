@@ -18,7 +18,7 @@ class Blocklist
     protected $limit = 10;
     protected $offset = 0;
 
-    public function __construct($dateStart = null, $dateEnd = null, $limit = null, $offset = null)
+    public function __construct($dateStart = null, $dateEnd = null, $limit = 0, $offset = 0)
     {
         $this->dateStart = $dateStart;
         $this->dateEnd = $dateEnd;
