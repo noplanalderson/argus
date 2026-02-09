@@ -8,11 +8,13 @@ RUN apt-get update && apt-get install -y \
     wget \
     libcurl4-openssl-dev \
     libpng-dev \
+    libzip-dev \
     libjpeg62-turbo-dev \
     libfreetype6-dev \
     libxml2-dev \
     libonig-dev \
     libssl-dev \
+    libicu-dev \
     pkg-config \
     && docker-php-ext-configure gd \
         --with-freetype \
@@ -28,6 +30,7 @@ RUN apt-get update && apt-get install -y \
         curl \
         dba \
         zip \
+        intl \
         sockets \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

@@ -12,6 +12,8 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libxml2-dev \
     libonig-dev \
+    libzip-dev \
+    libicu-dev \
     libssl-dev \
     pkg-config \
     && docker-php-ext-configure gd \
@@ -27,6 +29,7 @@ RUN apt-get update && apt-get install -y \
         pdo_mysql \
         curl \
         dba \
+        intl \
         zip \
         sockets \
     && apt-get clean \
