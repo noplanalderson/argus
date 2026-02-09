@@ -135,7 +135,7 @@ class TIPConfig
             ],
             'ipapi' => [
                 'method' => 'GET',
-                'url' => fn($obs) => self::IPAPI_URL . "{$obs}?fields=country,isp,org,as,city"
+                'url' => fn($obs) => self::IPAPI_URL . "{$obs}?country,isp,org,as,city,countryCode"
             ],
             'opencti' => [
                 'method' => 'POST',

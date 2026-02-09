@@ -271,7 +271,7 @@ class Analyzer
 
     protected function ipInfo()
     {
-        $this->data['ip_info'] = ['isp' => 'N/A', 'country' => 'N/A', 'city' => 'N/A'];
+        $this->data['ip_info'] = ['isp' => 'N/A', 'country' => 'N/A', 'city' => 'N/A', 'countryCode' => 'N/A'];
         if(isset($this->reports['ipapi'])) {
             if($this->reports['ipapi']['success'] == true) {
                 $this->data['ip_info'] = $this->reports['ipapi']['results'];
@@ -547,6 +547,7 @@ class Analyzer
                         'ip_address' => $this->reports['observable'],
                         'isp' => $this->data['ip_info']['isp'] ?? 'Unknown',
                         'location' => "{$country} - {$city}",
+                        'country_code' => $this->data['ip_info']['countryCode'] ?? 'N/A',
                         'classification' => json_encode($this->data['classification']),
                         'created_at' => date("Y-m-d H:i:s")
                     ]);
