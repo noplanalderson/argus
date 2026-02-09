@@ -20,7 +20,10 @@ class ThreatbookScoring
         'Spam' => 10,         // Distribusi spam
         'Compromised' => 15,  // Host yang terinfiltrasi
         'Brute Force' => 16,  // Serangan brute force
-        'Tor' => 8            // Tor exit node (dari data)
+        'Tor' => 8,           // Tor exit node (dari data)
+        'Dynamic IP' => 5,    // IP dinamis (risiko rendah),
+        'VPN' => 10,
+        'DDNS' => 10
     ];
     
     private $highRiskCountry = [
