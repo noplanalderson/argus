@@ -28,23 +28,21 @@ class Blocklist
 
     public function getBlocklist()
     {
-        $result = [
-            'already_analyzed' => false,
-            'blockmode' => false 
-        ];
-
         $results = DB::from('tb_ip_address', 'a')
                         ->select([
                             'a.ip_address',
                             'a.isp',
                             'a.location',
                             "JSON_UNQUOTE(JSON_EXTRACT(b.decision, '$.blockmode')) AS blockmode",
-                            'b.created_at'
+                            'b.created_at',
+                            'b.wazuh_score',
+                            'b.tip_score',
+                            'b.overall_score'
                         ])
                         ->join('tb_analysis_history AS b', 'a.ip_id_uuid = b.ip_id_uuid')
-                        ->whereRaw('DATE(b.created_at) >= :start', [':start' => $this->dateStart])
-                        ->whereRaw('DATE(b.created_at) <= :end', [':end' => $this->dateEnd])
-                        ->orderBy('a.created_at', 'desc')
+                        ->whereRaw('b.created_at >= :start', [':start' => $this->dateStart])
+                        ->whereRaw('b.created_at <= :end', [':end' => $this->dateEnd])
+                        ->orderBy('b.created_at', 'desc')
                         ->limit($this->limit, $this->offset)
                         ->get();
             
