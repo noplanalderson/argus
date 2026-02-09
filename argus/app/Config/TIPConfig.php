@@ -97,13 +97,22 @@ class TIPConfig
                 'method'  => 'POST',
                 'url'     => self::THREATBOOK_URL,
                 'headers' => [
-                    'Content-Type' => 'application/x-www-form-urlencoded'
+                    'Accept' => 'application/json'
                 ],
-                'body'    => fn($obs) => http_build_query([
-                    'apikey' => $_ENV['THREATBOOK_API_KEY'] ?? '',
-                    'resource' => $obs,
-                    'include' => 'judgements'
-                ])
+                'multipart' => fn($obs) => [
+                    [
+                        'name'     => 'resource',
+                        'contents' => $obs
+                    ],
+                    [
+                        'name'     => 'apikey',
+                        'contents' => $_ENV['THREATBOOK_API_KEY'] ?? ''
+                    ],
+                    [
+                        'name'     => 'include',
+                        'contents' => 'judgements'
+                    ]
+                ]
             ],
             'abuseipdb' => [
                 'method'  => 'GET',

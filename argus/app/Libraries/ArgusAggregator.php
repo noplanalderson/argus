@@ -53,10 +53,13 @@ class ArgusAggregator
             $url     = is_callable($info['url']) ? $info['url']($this->observable) : $info['url'];
             $headers = $info['headers'] ?? [];
             $body    = isset($info['body']) && is_callable($info['body']) ? $info['body']($this->observable) : null;
+            $multipart = isset($info['multipart']) && is_callable($info['multipart']) ? $info['multipart']($this->observable) : null;
 
             $options = ['headers' => $headers];
             if ($method === 'POST' && $body !== null) {
                 $options['body'] = $body;
+            } elseif ($method === 'POST' && $multipart !== null) {
+                $options['multipart'] = $multipart;
             }
 
             $this->requests[] = $source;
