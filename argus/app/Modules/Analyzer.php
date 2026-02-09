@@ -325,7 +325,7 @@ class Analyzer
 
     protected function threatbook()
     {
-        if(isset($this->reports['opencti'])) {
+        if(isset($this->reports['threatbook'])) {
             if($this->reports['threatbook']['success'] == true) {
                 $tbData = $this->reports['threatbook']['results']['data'];
                 $tb = new ThreatbookScoring($tbData);
