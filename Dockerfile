@@ -1,11 +1,14 @@
 FROM php:8.3-fpm
 
 # Install dependencies
+FROM php:8.2-fpm
+
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     cron \
     wget \
+    pkg-config \
     libcurl4-openssl-dev \
     libpng-dev \
     libjpeg62-turbo-dev \
@@ -15,25 +18,31 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     libicu-dev \
     libssl-dev \
-    pkg-config \
     && docker-php-ext-configure gd \
         --with-freetype \
         --with-jpeg \
     && docker-php-ext-install \
-        mysqli \
-        gd \
         bcmath \
-        xml \
-        dom \
-        mbstring \
-        pdo_mysql \
+        ctype \
         curl \
-        dba \
+        dom \
+        fileinfo \
+        filter \
+        gd \
+        hash \
         intl \
+        mbstring \
+        mysqli \
+        opcache \
+        pdo \
+        pdo_mysql \
+        simplexml \
+        xml \
         zip \
         sockets \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
