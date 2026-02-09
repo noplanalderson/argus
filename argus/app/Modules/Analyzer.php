@@ -5,6 +5,7 @@ use App\Libraries\CriminalIPScoring;
 use App\Libraries\AdaptiveSAW;
 use App\Libraries\MalwareBazaarScoring;
 use App\Libraries\WazuhRuleScoring;
+use App\Libraries\ThreatbookScoring;
 use App\Cores\DB;
 use Ramsey\Uuid\Uuid;
 /**
@@ -51,6 +52,7 @@ class Analyzer
             'crowdsec' => 0,
             'abuseipdb' => 0,
             'opencti' => 0,
+            'threatbook' => 0,
             'overall' => 0
         ],
         'classification' => [],
@@ -69,11 +71,12 @@ class Analyzer
         ],
         'ip' => [
             'virustotal' => 0.10,
-            'blocklist' => 0.30,
+            'blocklist' => 0.25,
             'abuseipdb' => 0.30,
             'crowdsec' => 0.15,
-            'criminalip' => 0.10,
-            'opencti' => 0.05
+            'criminalip' => 0.05,
+            'opencti' => 0.05,
+            'threatbook' => 0.10
         ]
     ];
 
@@ -317,6 +320,19 @@ class Analyzer
             } else {
                 $this->logError('OPENCTI', 'Failed to retrieve OpenCTI data for observable: ' . $this->reports['observable']);
             }
+        }
+    }
+
+    protected function threatbook()
+    {
+        if(isset($this->reports['opencti'])) {
+            if($this->reports['threatbook']['success'] == true) {
+                $tbData = $this->reports['threatbook']['results']['data'];
+                $tb = new ThreatbookScoring($tbData);
+                $this->data['scores']['threatbook'] = $tb->calculateScore();
+            }
+        } else {
+            $this->logError('THREATBOOK', 'Failed to retrieve Threatbook data for observable: ' . $this->reports['observable']);
         }
     }
 

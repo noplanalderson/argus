@@ -10,6 +10,7 @@ class TIPConfig
     const VIRUSTOTAL_URL      = 'https://www.virustotal.com/api/v3/';
     const CROWDSEC_URL        = 'https://cti.api.crowdsec.net/v2/smoke/';
     const CRIMINAL_IP_URL     = 'https://api.criminalip.io/v1/asset/ip/report/summary';
+    const THREATBOOK_URL      = 'https://api.threatbook.io/v1/community/ip';
     const IPAPI_URL           = 'http://ip-api.com/json/';
 
     public static function getHashSources(): array
@@ -91,6 +92,14 @@ class TIPConfig
                     'User-Agent' => 'Argus Aggregator/1.0',
                     'x-apikey'   => $_ENV['VT_API_KEY'] ?? ''
                 ]
+            ],
+            'threatbook' => [
+                'method'  => 'POST',
+                'url'     => fn($obs) => self::THREATBOOK_URL . '?' . http_build_query([
+                    'apikey' => $_ENV['THREATBOOK_API_KEY'] ?? '',
+                    'resource' => $obs,
+                    'include' => 'judgements'
+                ])
             ],
             'abuseipdb' => [
                 'method'  => 'GET',
