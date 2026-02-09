@@ -35,7 +35,8 @@ class Analyzer
             'abuseipdb' => false,
             'crowdsec' => false,
             'criminalip' => false,
-            'opencti' => false
+            'opencti' => false,
+            'threatbook' => false
         ]
     ];
 
