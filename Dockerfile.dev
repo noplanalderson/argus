@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y \
     cron \
     libcurl4-openssl-dev \
     wget \
-    && docker-php-ext-install mysqli pdo_mysql curl dba sockets \
+    && docker-php-ext-install mysqli gd bcmath xml dom mbstring pdo_mysql curl dba sockets \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
