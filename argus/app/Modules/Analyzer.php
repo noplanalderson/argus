@@ -400,6 +400,7 @@ class Analyzer
             $this->criminalIp();
             $this->isBlacklisted();
             $this->opencti();
+            $this->threatbook();
 
             $adaptiveSAW = new AdaptiveSAW(
                 $this->data['scores'], 
@@ -455,6 +456,7 @@ class Analyzer
                                 'criminalip_score' => $this->data['scores']['criminalip'],
                                 'blocklist_score' => $this->data['scores']['blocklist'],
                                 'opencti_score' => $this->data['scores']['opencti'],
+                                'threatbook_score' => $this->data['scores']['threatbook'],
                                 'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
                                 'tip_score' => round($scoreOverall['tip_score'], 2),
                                 'overall_score' => $this->data['scores']['overall']['score'],
@@ -556,6 +558,7 @@ class Analyzer
                         'criminalip_score' => $this->data['scores']['criminalip'],
                         'blocklist_score' => $this->data['scores']['blocklist'],
                         'opencti_score' => $this->data['scores']['opencti'],
+                        'threatbook_score' => $this->data['scores']['threatbook'],
                         'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
                         'tip_score' => round($scoreOverall['tip_score'], 2),
                         'overall_score' => round($scoreOverall['score'], 2),
