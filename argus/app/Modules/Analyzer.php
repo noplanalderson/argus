@@ -412,11 +412,12 @@ class Analyzer
             $scoreOverall = $adaptiveSAW->scoring();
 
             // Check IP histories
-            $history = DB::table('tb_analysis_history')->select('tb_analysis_history.*, ip_address')
+            $history = DB::table('tb_analysis_history')->select('tb_analysis_history.*, country_code, ip_address')
                             ->join('tb_ip_address', 'tb_ip_address.ip_id_uuid = tb_analysis_history.ip_id_uuid', 'inner')
                             ->where('ip_address', '=', $this->reports['observable'])->orderBy('tb_analysis_history.created_at', 'desc')->first();
 
             if (!empty($history)) {
+                $this->data['ip_info']['countryCode'] = $history['country_code'] ?? 'N/A';
                 $history['decision'] = json_decode($history['decision'], true);
                 $createdAt = strtotime($history['created_at']);
                 $blocked = $history['decision']['blockmode'];
@@ -667,6 +668,7 @@ class Analyzer
         return array_merge($this->data, [
             'type' => $this->type, 
             'description' => strtoupper($this->type) . " analysis based on multiple TIPs (Scores {$this->data['scores']['overall']['score']})",
+            'country_code' => $this->data['ip_info']['countryCode'] ?? 'N/A',
             'success_source' => $success.'/'.count($this->successResources[$this->type])
         ]);
     }
