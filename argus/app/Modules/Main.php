@@ -3,6 +3,7 @@ namespace App\Modules;
 use App\Config\Config;
 use App\Config\TIPConfig;
 use App\Libraries\ArgusAggregator;
+use App\Libraries\NextcloudReport;
 
 /**
  * Main Class of Argus (Adaptive Reputation & Guarding Unified System)
@@ -164,6 +165,14 @@ class Main
                     );
                     $results = $blocklist->getBlocklist();
                     setJSON($results, 200);
+                    break;
+
+                case 'create24h-report':
+                    $blocklist = new \App\Modules\Blocklist();
+                    $results = $blocklist->getBlocklist24h();
+                    $nexcloud = new NextcloudReport();
+                    $reports = $nexcloud->generate($results);
+                    setJSON(array_merge($results, ['nextcloud_report' => $reports]), 200);
                     break;
 
                 case 'jobs':
