@@ -13,6 +13,9 @@ class NextcloudReport
      */
     private function buildSummary(array $data): array
     {
+        $openAi = new OpenAISummary();
+        $aiSummary = $openAi->summary($data);
+
         $total = count($data);
         $highRisk = 0;
         $totalScore = 0;
@@ -27,7 +30,8 @@ class NextcloudReport
         return [
             'total' => $total,
             'highRisk' => $highRisk,
-            'avgScore' => round($totalScore / max($total,1), 2)
+            'avgScore' => round($totalScore / max($total,1), 2),
+            'ai_summary' => $aiSummary
         ];
     }
 
@@ -168,8 +172,9 @@ class NextcloudReport
                 <td>{$d['updated_at']}</td>
             </tr>";
         }
-
-        return $html . "</table>";
+        $html .= "</table>";
+        $openAiSummary = nl2br($summary['ai_summary']);
+        return $html . "<p>{$openAiSummary}</p>";
     }
 
     /**
@@ -287,6 +292,8 @@ class NextcloudReport
 
         return [
             'status' => $status == 201 || $status == 204 ? 'success' : 'error',
+            // 'status' => 'success',
+            'ai_summary' => $summary['ai_summary'],
             'share_link' => $share
         ];
     }

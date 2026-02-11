@@ -172,7 +172,7 @@ class Main
                     $results = $blocklist->getBlocklist24h();
                     $nexcloud = new NextcloudReport();
                     $reports = $nexcloud->generate($results);
-                    setJSON(array_merge($results, ['nextcloud_report' => $reports]), 200);
+                    setJSON(array(['blocklist' => $results, 'nextcloud_report' => $reports]), 200);
                     break;
 
                 case 'jobs':
