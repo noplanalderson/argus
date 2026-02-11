@@ -62,9 +62,9 @@ if [ -f "/var/www/html/composer.json" ]; then\n\
 fi\n\
 \n\
 # Set up cron if cron file exists\n\
-if [ -f "/var/www/html/cron/blocklist-cron" ]; then\n\
+if [ ! -f "/etc/cron.d/blocklist-cron" ]; then\n\
     echo "Setting up cron jobs..."\n\
-    cp /var/www/html/cron/blocklist-cron /etc/cron.d/blocklist-cron\n\
+    cp /var/www/html/script/blocklist-cron /etc/cron.d/blocklist-cron\n\
     chmod 0644 /etc/cron.d/blocklist-cron\n\
     crontab /etc/cron.d/blocklist-cron\n\
 fi\n\

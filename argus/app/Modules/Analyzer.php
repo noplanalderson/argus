@@ -328,7 +328,7 @@ class Analyzer
     {
         if(isset($this->reports['threatbook'])) {
             if($this->reports['threatbook']['success'] == true) {
-                $tbData = $this->reports['threatbook']['results']['data'];
+                $tbData = $this->reports['threatbook']['results'];
                 $tb = new ThreatbookScoring($tbData);
                 $this->data['scores']['threatbook'] = $tb->calculateScore();
             }
@@ -616,7 +616,6 @@ class Analyzer
                             'yara_score' => $this->data['scores']['yaraify'],
                             'malprobe_score' => $this->data['scores']['malprobe'],
                             'opencti_score' => $this->data['scores']['opencti'],
-                            'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
                             'tip_score' => round($scoreOverall['tip_score'], 2),
                             'overall_score' => round($scoreOverall['score'], 2),
                             'decision' => json_encode($this->data['decision']),
@@ -643,7 +642,6 @@ class Analyzer
                         'yara_score' => $this->data['scores']['yaraify'],
                         'malprobe_score' => $this->data['scores']['malprobe'],
                         'opencti_score' => $this->data['scores']['opencti'],
-                        'wazuh_score' => round($scoreOverall['wazuh_rule_score'], 2),
                         'tip_score' => round($scoreOverall['tip_score'], 2),
                         'overall_score' => round($scoreOverall['score'], 2),
                         'decision' => json_encode($this->data['decision']),

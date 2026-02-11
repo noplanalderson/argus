@@ -45,7 +45,7 @@ COPY ./argus /var/www/html
 RUN composer install --no-dev --optimize-autoloader
 
 # Set up cron
-RUN if [ -f "/var/www/html/cron/blocklist-cron" ]; then \
+RUN if [ ! -f "/etc/cron.d/blocklist-cron" ]; then \
         cp /var/www/html/script/blocklist-cron /etc/cron.d/blocklist-cron && \
         chmod 0644 /etc/cron.d/blocklist-cron && \
         crontab /etc/cron.d/blocklist-cron; \

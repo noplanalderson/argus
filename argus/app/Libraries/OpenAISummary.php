@@ -22,7 +22,7 @@ class OpenAISummary
         $blocklistJson = json_encode($data, JSON_PRETTY_PRINT);
 
         $prompt = "
-        Analisis data blocklist berikut (format JSON) dan buatkan secara singkat laporan dengan struktur:
+        Analisis data blocklist berikut (format JSON) dan buatkan secara singkat laporan HTML dengan struktur:
 
         1. Executive Summary
         2. Technical Insight (negara, ISP, skor)
@@ -47,7 +47,7 @@ class OpenAISummary
                     'input' => [
                         [
                             'role' => 'system',
-                            'content' => 'Anda adalah SOC Analyst senior di lingkungan pemerintahan.'
+                            'content' => 'Anda adalah SOC Analyst senior di lingkungan pemerintahan. Jangan memberikan saran apapun setelah menyelesaikan tugas Anda.'
                         ],
                         [
                             'role' => 'user',
