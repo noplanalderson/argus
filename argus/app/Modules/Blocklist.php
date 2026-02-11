@@ -66,17 +66,7 @@ class Blocklist
                             'b.overall_score'
                         ])
                         ->join('tb_analysis_history AS b', 'a.ip_id_uuid = b.ip_id_uuid')
-                        ->whereRaw("
-                            (
-                                b.created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) + INTERVAL 6 HOUR
-                                AND b.created_at < CURDATE() + INTERVAL 6 HOUR
-                            )
-                            OR
-                            (
-                                b.updated_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY) + INTERVAL 6 HOUR
-                                AND b.updated_at < CURDATE() + INTERVAL 6 HOUR
-                            )
-                        ")
+                        ->whereRaw("b.created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR) OR b.updated_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)")
                         ->orderBy('b.created_at', 'desc')
                         ->get();
             

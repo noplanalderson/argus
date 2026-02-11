@@ -105,6 +105,7 @@ class NextcloudReport
      */
     private function buildHtml(array $data, array $summary, string $chartPath): string
     {
+        $period = date('d M Y H:i', strtotime('-24 hours')) . ' - ' . date('d M Y H:i');
         $html = "
         <style>
         body { font-family: DejaVu Sans; font-size: 10px; }
@@ -123,7 +124,7 @@ class NextcloudReport
         </style>
 
         <h1>Argus-OSINT Report</h1>
-        <h2>Window 06:00 (24 Hours)</h2>
+        <p>Period: {$period}</p>
 
         <div class='summary'>
             <div class='box'>Total IP<br><b>{$summary['total']}</b></div>
