@@ -20,6 +20,8 @@ if (version_compare(PHP_VERSION, $minPhpVersion, '<')) {
     exit(1);
 }
 
+mb_internal_encoding('UTF-8');
+
 /*
  *---------------------------------------------------------------
  * SET THE CURRENT DIRECTORY
@@ -57,6 +59,8 @@ $paths = new App\Config\Paths();
 
 // LOAD THE FRAMEWORK BOOTSTRAP FILE
 require FCPATH . '../Boot.php';
+
+ini_set('memory_limit', '256M');
 
 // Boot the app
 Microservices\Boot::loadThemAll($paths);

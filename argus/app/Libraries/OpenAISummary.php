@@ -47,8 +47,7 @@ class OpenAISummary
                     'input' => [
                         [
                             'role' => 'system',
-                            'content' => 'Anda adalah SOC Analyst senior di lingkungan pemerintahan. Jangan memberikan saran apapun setelah menyelesaikan tugas Anda. Gunakan karakter ASCII saja. Jangan gunakan simbol khusus seperti panah (↑), bullet khusus, atau karakter Unicode non-standar.
-'
+                            'content' => 'Anda adalah SOC Analyst senior di lingkungan pemerintahan. Jangan memberikan saran apapun setelah menyelesaikan tugas Anda.'
                         ],
                         [
                             'role' => 'user',
