@@ -54,29 +54,23 @@ Logging & Reporting (PDF / Nextcloud)
 ## 4. Scoring Engine Model
 ARGUS uses a weighted scoring model.
 ### IP Weights
+| TIP | Weight |
+| - | - |
 | VirusTotal | 0.10 |
-|--|--|
 | Blocklist | 0.30 (0.25 if OpenCTI enabled) |
-|--|--|
 | AbuseIPDB| 0.30 |
-|--|--|
 | CrowdSec| 0.15 |
-|--|--|
 | CriminalIP| 0.05 |
-|--|--|
 | ThreatBook| 0.10 |
-|--|--|
 | OpenCTI| 0.05 |
   
 ### Hash Weights
+| TIP | Weight |
+| - | - |
 | VirusTotal | 0.35 (0.30 if OpenCTI enabled) |
-|--|--|
 | Yaraify| 0.15 (0.05 if OpenCTI enabled) |
-|--|--|
 | Malware Bazaar| 0.20 (0.15 if OpenCTI enabled) |
-|--|--|
 | Malprobe| 0.30 (0.25 if OpenCTI enabled) |
-|--|--|
 | OpenCTI| 0.25 (optional) |
  
 Weights dynamically adjust if OpenCTI is configured.
