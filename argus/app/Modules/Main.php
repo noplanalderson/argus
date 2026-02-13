@@ -76,17 +76,34 @@ class Main
                     $post = $this->request->post();
 
                     if($_ENV['FW_TYPE'] == 'SANGFOR') {
+                        $requiredFields = ['FW_HOST', 'FW_USER', 'FW_PASS'];
+                        $missingFields = array_filter($requiredFields, fn($field) => empty($_ENV[$field]));
+                        
+                        if (!empty($missingFields)) {
+                            setJSON([
+                                'code' => 500,
+                                'error' => 'Configuration Error',
+                                'message' => 'Sangfor firewall not configured. Missing: ' . implode(', ', $missingFields)
+                            ], 500);
+                        }
+                        
                         $sangfor = new \App\Libraries\Sangfor;
-                        // $sangfor->login();
-                        // $sangfor->keepalive();
-
-                        // $blacklist = $sangfor->getBlacklist(10);
                         if($post['blockmode'] == 'permanent') {
                             $block = $sangfor->createblackwhite($post);
                         } else {
                             $block = $sangfor->tempblock($post);
                         }
                     } else {
+                        $requiredFields = ['FW_HOST', 'FW_USER', 'FW_PASS', 'FW_PORT'];
+                        $missingFields = array_filter($requiredFields, fn($field) => empty($_ENV[$field]));
+                        
+                        if (!empty($missingFields)) {
+                            setJSON([
+                                'code' => 500,
+                                'error' => 'Configuration Error',
+                                'message' => 'Mikrotik not configured. Missing: ' . implode(', ', $missingFields)
+                            ], 500);
+                        }
                         $mikrotik = new \App\Libraries\Mikrotik;
                         $block = $mikrotik->cmd($post);
                     }
@@ -96,20 +113,6 @@ class Main
                         'message' => "Ready, comrade 🫡!",
                         'result' => $block
                     ], 200);
-                    break;
-                
-                case 'yeti':
-                    $observable = $this->request->post('observable');
-                    $type = $this->request->post('type');
-                    $yeti = new \App\Modules\Yeti;
-                    $yeti->getAccessToken();
-                    $observableData = $yeti->getObservable($observable);
-                    if($observableData['code'] === 200) {
-                        if(empty($observableData['data']['known'])) {
-                            $observableData = $yeti->addObservable($observable, $type);
-                        }
-                    }
-                    setJSON($observableData, $observableData['code']);
                     break;
 
                 case 'analyze':
@@ -192,8 +195,8 @@ class Main
                         'error' => null,
                         'title' => "ARGUS",
                         'description' => "Argus (Adaptive Reputation & Guarding Unified System) based on Multiple Threat Intelligence Source and Blocklist with Automatic IP Blocker to Sangfor NGFW or Mikrotik",
-                        'author' => "Muhammad Ridwan Na'im <ridwannaim@tangerangkota.go.id>",
-                        'version' => "2.3.0",
+                        'author' => "Muhammad Ridwan Na'im <mrnaeem@tutanota.com>",
+                        'version' => "4.0.0",
                         'endpoints' => [
                             [
                                 'method' => 'GET',
@@ -251,13 +254,9 @@ class Main
                                 ]
                             ],
                             [
-                                'method' => 'POST',
-                                'path' => '/yeti',
-                                'description' => 'Get observable from YETI',
-                                'params' => [
-                                    'observable' => 'IP address or file hash',
-                                    'type' => 'Observable type'
-                                ]
+                                'method' => 'GET',
+                                'path' => '/create24h-report',
+                                'description' => 'Generate 24-hour blocklist report to PDF file.'
                             ]
                         ]
                     ], 200);
