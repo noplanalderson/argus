@@ -27,7 +27,6 @@ class Analyzer
             'yaraify' => false,
             'malware_bazaar' => false,
             'malprobe' => false,
-            'opencti' => false
         ],
         'ip' => [
             'virustotal' => false,
@@ -35,7 +34,6 @@ class Analyzer
             'abuseipdb' => false,
             'crowdsec' => false,
             'criminalip' => false,
-            'opencti' => false,
             'threatbook' => false
         ]
     ];
@@ -52,7 +50,6 @@ class Analyzer
             'blocklist' => 0,
             'crowdsec' => 0,
             'abuseipdb' => 0,
-            'opencti' => 0,
             'threatbook' => 0,
             'overall' => 0
         ],
@@ -64,19 +61,19 @@ class Analyzer
 
     protected array $weight = [
         'hash' => [
-            'virustotal' => 0.30,
-            'yaraify' => 0.05,
-            'malware_bazaar' => 0.15,
-            'malprobe' => 0.25,
-            'opencti' => 0.25
+            'virustotal' => 0.35, # Reduce to 0.30 if OpenCTI exists
+            'yaraify' => 0.15, # Reduce to 0.05 if OpenCTI exists
+            'malware_bazaar' => 0.20, # Reduce to 0.15 if OpenCTI exists
+            'malprobe' => 0.30, # Reduce to 0.25 if OpenCTI exists
+            // 'opencti' => 0.25
         ],
         'ip' => [
             'virustotal' => 0.10,
-            'blocklist' => 0.25,
+            'blocklist' => 0.30, # Reduce to 0.25 if OpenCTI exists
             'abuseipdb' => 0.30,
             'crowdsec' => 0.15,
             'criminalip' => 0.05,
-            'opencti' => 0.05,
+            // 'opencti' => 0.05,
             'threatbook' => 0.10
         ]
     ];
@@ -92,6 +89,20 @@ class Analyzer
         $this->wazuhRule = $wazuhRule;
         $this->data['observable'] = $reports['observable'] ?? null;
         $this->logFile = ROOTPATH . 'logs/argus_tip.log';
+
+        if (!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
+            $this->weight['hash']['opencti'] = 0.25;
+            $this->weight['hash']['virustotal'] = 0.30; # Reduce to 0.30 if OpenCTI exists
+            $this->weight['hash']['yaraify'] = 0.05; # Reduce to 0.05 if OpenCTI exists
+            $this->weight['hash']['malware_bazaar'] = 0.15; # Reduce to 0.15 if OpenCTI exists
+            $this->weight['hash']['malprobe'] = 0.25; # Reduce to 0.25 if OpenCTI exists
+
+            $this->weight['ip']['opencti'] = 0.05;
+            $this->weight['ip']['blocklist'] = 0.25;
+
+            $this->successResources[$type]['opencti'] = false;
+            $this->data['scores']['opencti'] = 0;
+        }
     }
 
     private function __normalizeScores($score, $maxScore)
