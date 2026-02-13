@@ -84,7 +84,7 @@ class TIPConfig
 
     public static function getIpSources(): array
     {
-        return [
+        $sources = [
             'virustotal' => [
                 'method'  => 'GET',
                 'url'     => fn($obs) => self::VIRUSTOTAL_URL . "ip_addresses/{$obs}",
@@ -101,16 +101,16 @@ class TIPConfig
                 ],
                 'multipart' => fn($obs) => [
                     [
-                        'name'     => 'resource',
-                        'contents' => $obs
+                    'name'     => 'resource',
+                    'contents' => $obs
                     ],
                     [
-                        'name'     => 'apikey',
-                        'contents' => $_ENV['THREATBOOK_API_KEY'] ?? ''
+                    'name'     => 'apikey',
+                    'contents' => $_ENV['THREATBOOK_API_KEY'] ?? ''
                     ],
                     [
-                        'name'     => 'include',
-                        'contents' => 'judgements'
+                    'name'     => 'include',
+                    'contents' => 'judgements'
                     ]
                 ]
             ],
@@ -145,38 +145,43 @@ class TIPConfig
             'ipapi' => [
                 'method' => 'GET',
                 'url' => fn($obs) => self::IPAPI_URL . "{$obs}?country,isp,org,as,city,countryCode"
-            ],
-            'opencti' => [
+            ]
+        ];
+
+        if (!empty($_ENV['OPENCTI_URL']) && !empty($_ENV['OPENCTI_API_KEY'])) {
+            $sources['opencti'] = [
                 'method' => 'POST',
                 'url' => $_ENV['OPENCTI_URL'] . '/graphql',
                 'headers' => [
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . ($_ENV['OPENCTI_API_KEY'] ?? '')
+                    'Authorization' => 'Bearer ' . $_ENV['OPENCTI_API_KEY']
                 ],
                 'body' => fn($obs) => json_encode([
                     'query' => file_get_contents(ROOTPATH . '/script/query.graphql'),
                     'variables' => [
-                        'count' => 1,
-                        'search' => $obs,
-                        'orderMode' => 'desc',
-                        'orderBy' => '_score',
+                    'count' => 1,
+                    'search' => $obs,
+                    'orderMode' => 'desc',
+                    'orderBy' => '_score',
+                    'filters' => [
+                        'mode' => 'and',
                         'filters' => [
-                            'mode' => 'and',
-                            'filters' => [
-                                [
-                                    'key' => 'entity_type',
-                                    'values' => [],
-                                    'operator' => 'eq',
-                                    'mode' => 'or'
-                                ]
-                            ],
-                            'filterGroups' => []
+                        [
+                            'key' => 'entity_type',
+                            'values' => [],
+                            'operator' => 'eq',
+                            'mode' => 'or'
                         ]
+                        ],
+                        'filterGroups' => []
+                    ]
                     ],
                     'operationName' => 'StixCyberObservablesLinesPaginationQuery'
                 ])
-            ]
-        ];
+            ];
+        }
+
+        return $sources;
     }
 
     public static function getSources(string $type): array
