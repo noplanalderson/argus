@@ -179,7 +179,7 @@ The system can generate a 24-hour blocklist report including:
 - Rate limiting recommended in production
 - TLS termination required in public deployment
 ------------------------------------------------------------------------
-# 11. Research Extensions
+## 11. Research Extensions
 Possible future research directions:
 - Machine Learning based scoring
 - Behavioral anomaly scoring
