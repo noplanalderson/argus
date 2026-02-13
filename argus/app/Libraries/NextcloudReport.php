@@ -15,10 +15,7 @@ class NextcloudReport
     {
         $openAi = new OpenAISummary();
         $aiSummary = $openAi->summary($data);
-        // $aiSummary = "<div class='ai-summary-section'>
-        //     <div class='section-title'>🤖 AI-Powered Insights</div>
-        //     <div class='ai-summary-text'>
-        //         <p><strong>Summary:</strong> Database berisi 106 entri IP yang dimasukkan ke blocklist. Mayoritas entri diberi 
+        // $aiSummary = "<p><strong>Summary:</strong> Database berisi 106 entri IP yang dimasukkan ke blocklist. Mayoritas entri diberi 
         //             bajakan blok 7d, ada satu entri dengan status permanent. Sebagian besar basal dari penyedia cloud (Microsoft, 
         //             DigitalOcean, Amazon) dan beberapa ISP nasional (beberapa asal Indonesia). Skor gabungan overall_score 
         //             menunjukkan sebagian besar entri berada di rentang menengah mengecil (<50 Score) dan beberapa 
@@ -31,9 +28,7 @@ class NextcloudReport
         //             <li>Geographic distribution: Asia-Pacific region mendominasi dengan 73% dari total entries</li>
         //             <li>Block duration: 7 hari adalah durasi block yang paling umum (94% dari entries)</li>
         //             <li>Trend: Aktivitas mencurigakan menunjukkan peningkatan pada 11-12 February 2026</li>
-        //         </ul>
-        //     </div>
-        // </div>";
+        //         </ul>";
         $total = count($data);
         $highRisk = 0;
         $totalScore = 0;
@@ -587,6 +582,15 @@ class NextcloudReport
         $chart = $this->generateChart($data);
         $html = $this->buildHtml($data, $summary, $chart);
         $pdfFile = $this->createPdf($html, $filename);
+
+        if (empty($_ENV['NEXTCLOUD_BASE']) || empty($_ENV['NEXTCLOUD_USER'])) {
+            // Download file instead
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            readfile($pdfFile);
+            unlink($pdfFile);
+            exit;
+        }
 
         $status = $this->uploadToNextcloud($pdfFile, $filename);
         $share = $this->createShareLink($filename);
