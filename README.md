@@ -21,18 +21,28 @@ ARGUS is designed for:
 ------------------------------------------------------------------------
 ## 2. Core Architecture
 Observable (IP / Hash)  from SIEM
-↓ 
-Multi-Source Threat Intelligence Aggregation 
+
 ↓
+
+Multi-Source Threat Intelligence Aggregation 
+
+↓
+
 Weighted Scoring Engine 
+
 ↓ 
+
 Decision Engine 
+
 ↓ 
+
 Firewall Automation (Sangfor / Mikrotik) 
+
 ↓ 
+
 Logging & Reporting (PDF / Nextcloud)
 
- ------------------------------------------------------------------------
+------------------------------------------------------------------------
 ## 3. Threat Intelligence Sources
 ### IPv4 Intelligence
 - VirusTotal
