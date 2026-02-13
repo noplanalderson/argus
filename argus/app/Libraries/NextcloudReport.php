@@ -112,7 +112,7 @@ class NextcloudReport
         $period = date('d M Y H:i', strtotime('-24 hours')) . ' - ' . date('d M Y H:i');
         $html = "
         <style>
-        body { font-family: DejaVu Sans; font-size: 10px; }
+        body { font-family: DejaVu Sans; font-size: 12px; }
         h1,h2 { text-align:center; }
 
         .summary { display:flex; justify-content:space-around; margin-bottom:15px; }
