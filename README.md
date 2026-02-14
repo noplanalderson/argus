@@ -44,6 +44,14 @@ Firewall Automation (Sangfor / Mikrotik)
 
 Logging & Reporting (PDF / Nextcloud)
 
+**Daily Report Statistic**
+
+![Graph Report](./images/Daily_Report1.jpg)
+
+**Daily Report with AI Summary**
+
+![AI Summary](./images/Daily_Report_AI_Summary.jpg)
+
 ------------------------------------------------------------------------
 ## 3. Threat Intelligence Sources
 ### IPv4 Intelligence
