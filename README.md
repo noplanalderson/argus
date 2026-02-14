@@ -106,8 +106,8 @@ ARGUS uses a weighted scoring model.
 | GET /check | Check observable status | - | observable | IP or Hash (required) |
 | POST /analyze | Analyze IPv4 or Hash Observable threat score | JSON | observable<br>frequency (int)<br>groups (array)<br>response_code (int)<br>level (int) | IP or Hash (SHA1\|SHA256\|SHA384\|SHA128 required)<br>Alert frequency on SIEM<br>SIEM Rule Groups<br>HTTP Response (Optional/For web attack)<br>Rule Level | 
 | POST /action | IP Blocking | JSON | ip_address (IPv4)<br>description (String)<br>type (BLACK)<br>enable (bool)<br>blockmode (String) | IPv4 to be blocked<br>Block description for Firewall<br>Sangfor only (Must be Black)<br>Blocking Status (Sangfor only)<br>Blocking duration (30m\|1h\|..\|7d\|permanent) |
-| POST /blocklist | Show blocked IP Address | JSON | date_start (datetime)<br>date_end (datetime)<br>limit (int)<br>offset (int) | Start Date (YYYY-MM-DD HH:ii:ss)<br>End Date (YYYY-MM-DD HH:ii:ss)<br>Data limit (Default: 10) | Data offset (Default: 0) |
-| POST /jobs | Get job history | JSON | date_start (datetime)<br>date_end (datetime)<br>limit (int)<br>offset (int) | Start Date (YYYY-MM-DD HH:ii:ss)<br>End Date (YYYY-MM-DD HH:ii:ss)<br>Data limit (Default: 10) | Data offset (Default: 0) |
+| POST /blocklist | Show blocked IP Address | JSON | date_start (datetime)<br>date_end (datetime)<br>limit (int)<br>offset (int) | Start Date (YYYY-MM-DD HH:ii:ss)<br>End Date (YYYY-MM-DD HH:ii:ss)<br>Data limit (Default: 10)<br>Data offset (Default: 0) |
+| POST /jobs | Get job history | JSON | date_start (datetime)<br>date_end (datetime)<br>limit (int)<br>offset (int) | Start Date (YYYY-MM-DD HH:ii:ss)<br>End Date (YYYY-MM-DD HH:ii:ss)<br>Data limit (Default: 10)<br> Data offset (Default: 0) |
 | GET /create24h-report | Generate 24-hour blocklist report to PDF file. | - | - | - |
 
 **Authentication required via Bearer Token.**
