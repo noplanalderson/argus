@@ -1,7 +1,7 @@
 # ARGUS v4.0.0
 ## Adaptive Reputation & Guarding Unified System
 
-![ARGUS ICON](./images/Argus_icon.png)
+<img src="./images/Argus_icon.png" width="250">
 
 ARGUS is a research-grade Threat Intelligence Aggregation and Automated IP Blocking System designed to integrate multiple Threat Intelligence Platforms (TIP) and automate firewall enforcement.
 
