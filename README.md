@@ -82,6 +82,7 @@ ARGUS uses a weighted scoring model.
 **Note**
 1. Weights dynamically adjust if OpenCTI is configured
 2. The weight of TIPs that fail to obtain results (due to rate limits or request timeouts) will be summed up and distributed to successful TIPs.
+3. Test
 
 ------------------------------------------------------------------------
 ## 5. API Endpoints
