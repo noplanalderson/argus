@@ -78,8 +78,10 @@ ARGUS uses a weighted scoring model.
 | Malware Bazaar| 0.20 (0.15 if OpenCTI enabled) |
 | Malprobe| 0.30 (0.25 if OpenCTI enabled) |
 | OpenCTI| 0.25 (optional) |
- 
-Weights dynamically adjust if OpenCTI is configured.
+
+**Note**
+1. Weights dynamically adjust if OpenCTI is configured
+2. The weight of TIPs that fail to obtain results (due to rate limits or request timeouts) will be summed up and distributed to successful TIPs.
 
 ------------------------------------------------------------------------
 ## 5. API Endpoints
