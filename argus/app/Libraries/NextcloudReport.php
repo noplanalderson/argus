@@ -147,12 +147,9 @@ class NextcloudReport
                 }
                 
                 .container {
-                    background: white;
-                    max-width: 1200px;
-                    margin: 0 auto;
-                    padding: 30px;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    width: 100%;
+                    max-width: none;
+                    box-shadow: none;
                 }
                 
                 /* Header */
@@ -177,16 +174,17 @@ class NextcloudReport
                 
                 /* Summary Section */
                 .summary-section {
-                    display: flex;
-                    gap: 20px;
-                    margin: 25px 0;
-                    flex-wrap: wrap;
+                    display: table;
+                    width: 100%;
+                    table-layout: fixed;
+                    margin: 20px 0 10px 0;
+                    page-break-inside: avoid;
                 }
-                
+
                 .summary-box {
-                    flex: 1;
-                    min-width: 200px;
-                    padding: 20px;
+                    display: table-cell;
+                    width: 33.33%;
+                    padding: 15px;
                     border-radius: 8px;
                     border-left: 4px solid;
                     background: #f8f9fa;
@@ -228,6 +226,7 @@ class NextcloudReport
                     padding: 20px;
                     background: #f8f9fa;
                     border-radius: 8px;
+                    page-break-inside: avoid;
                 }
                 
                 .section-title {
@@ -241,8 +240,7 @@ class NextcloudReport
                 
                 .chart-section img {
                     width: 100%;
-                    max-width: 100%;
-                    height: auto;
+                    max-height: 350px;
                     border-radius: 6px;
                 }
                 
@@ -359,6 +357,7 @@ class NextcloudReport
                         min-width: 100%;
                     }
                 }
+                .page_break { page-break-before: always; }
             </style>
         </head>
         <body>
@@ -391,7 +390,7 @@ class NextcloudReport
                     <div class='section-title'>Score Distribution</div>
                     <img src='{$chartPath}' alt='Score Distribution Chart'>
                 </div>
-                
+                <div class='page_break'></div>
                 <!-- Detail Data Table -->
                 <div class='table-section'>
                     <div class='section-title'>Detailed Analysis</div>
@@ -441,7 +440,8 @@ class NextcloudReport
                 $html .= "
                         </tbody>
                     </table>
-                </div>";
+                </div>
+                <div class='page_break'></div>";
                 
                 // AI Summary Section
                 if (!empty($summary['ai_summary'])) {
