@@ -1,8 +1,4 @@
-
 # ARGUS v4.0.0
-
-  
-
 ## Adaptive Reputation & Guarding Unified System
 
 ARGUS is a research-grade Threat Intelligence Aggregation and Automated IP Blocking System designed to integrate multiple Threat Intelligence Platforms (TIP) and automate firewall enforcement.
@@ -87,16 +83,111 @@ Weights dynamically adjust if OpenCTI is configured.
 
 ------------------------------------------------------------------------
 ## 5. API Endpoints
+| Endpoint | Endpoint Description | Type | Parameters | Param Description |
+| - | - | - | - | - |
+| GET /home | Default Index | - | - | - |
+| GET /check | Check observable status | - | observable | IP or Hash (required) |
+| POST /analyze | Analyze IPv4 or Hash Observable threat score | JSON | observable<br>frequency (int)<br>groups (array)<br>response_code (int)<br>level (int) | IP or Hash (SHA1\|SHA256\|SHA384\|SHA128 required)<br>Alert frequency on SIEM<br>SIEM Rule Groups<br>HTTP Response (Optional/For web attack)<br>Rule Level | 
+| POST /action | IP Blocking | JSON | ip_address (IPv4)<br>description (String)<br>type (BLACK)<br>enable (bool)<br>blockmode (String) | IPv4 to be blocked<br>Block description for Firewall<br>Sangfor only (Must be Black)<br>Blocking Status (Sangfor only)<br>Blocking duration (30m\|1h\|..\|7d\|permanent) |
+| POST /blocklist | Show blocked IP Address | JSON | date_start (datetime)<br>date_end (datetime)<br>limit (int)<br>offset (int) | Start Date (YYYY-MM-DD HH:ii:ss)<br>End Date (YYYY-MM-DD HH:ii:ss)<br>Data limit (Default: 10) | Data offset (Default: 0) |
+| POST /jobs | Get job history | JSON | date_start (datetime)<br>date_end (datetime)<br>limit (int)<br>offset (int) | Start Date (YYYY-MM-DD HH:ii:ss)<br>End Date (YYYY-MM-DD HH:ii:ss)<br>Data limit (Default: 10) | Data offset (Default: 0) |
+| GET /create24h-report | Generate 24-hour blocklist report to PDF file. | - | - | - |
 
-    GET /home
-    GET /check
-    POST /analyze
-    POST /action
-    POST /blocklist
-    POST /jobs
-    GET /create24h-report
-Authentication required via Bearer Token.
+**Authentication required via Bearer Token.**
 
+### Analyze Results Sample
+Request
+```POST
+POST /analyze
+{
+    "observable": "180.242.130.19",
+    "frequency": 10,
+    "groups": ["webshell"],
+    "response_code": 404,
+    "level": 11
+}
+```
+Response
+```JSON
+{
+    "code": 200,
+    "error": null,
+    "message": "Ok",
+    "results": {
+        "id": "019c5a88-e483-70ff-80a0-a87a281d944f",
+        "observable": "180.242.130.19",
+        "scores": {
+            "virustotal": 24,
+            "malware_bazaar": 0,
+            "yaraify": 0,
+            "malprobe": 0,
+            "criminalip": 0,
+            "blocklist": 0,
+            "crowdsec": 20,
+            "abuseipdb": 0,
+            "threatbook": 28,
+            "overall": {
+                "score": 53.16,
+                "wazuh_rule_score": 74,
+                "tip_score": 21.9,
+                "weights": [
+                    {
+                        "virustotal": 0.4750000000000001,
+                        "blocklist": 0,
+                        "abuseipdb": 0,
+                        "crowdsec": 0.525,
+                        "criminalip": 0,
+                        "threatbook": 0,
+                        "opencti": 0
+                    },
+                    {
+                        "virustotal": true,
+                        "blocklist": false,
+                        "abuseipdb": false,
+                        "crowdsec": true,
+                        "criminalip": false,
+                        "threatbook": false,
+                        "opencti": false
+                    }
+                ]
+            },
+            "opencti": 0
+        },
+        "classification": {
+            "virustotal": "Unknown",
+            "crowdsec": [
+                "Residential IP"
+            ]
+        },
+        "decision": {
+            "notification": true,
+            "abuse_report": true,
+            "blockmode": "7d"
+        },
+        "ip_info": {
+            "status": "success",
+            "country": "Indonesia",
+            "countryCode": "ID",
+            "region": "JK",
+            "regionName": "Jakarta",
+            "city": "Jakarta",
+            "zip": "12970",
+            "lat": -6.2114,
+            "lon": 106.8446,
+            "timezone": "Asia/Jakarta",
+            "isp": "PT. TELKOM INDONESIA",
+            "org": "",
+            "as": "AS7713 PT Telekomunikasi Indonesia",
+            "query": "180.242.130.19",
+            "isPublic": true
+        },
+        "type": "ip",
+        "description": "IP analysis based on multiple TIPs (Scores 53.16)",
+        "country_code": "ID",
+        "success_source": "2/7"
+    }
+}
+```
 ------------------------------------------------------------------------
 ## 6. Environment Configuration
 ### Root .env
