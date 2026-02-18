@@ -4,6 +4,7 @@ use App\Config\Config;
 use App\Config\TIPConfig;
 use App\Libraries\ArgusAggregator;
 use App\Libraries\NextcloudReport;
+use App\Libraries\FWDropReport;
 
 /**
  * Main Class of Argus (Adaptive Reputation & Guarding Unified System)
@@ -178,6 +179,14 @@ class Main
                     setJSON(array(['blocklist' => $results, 'nextcloud_report' => $reports]), 200);
                     break;
 
+                case 'fwdrop-report':
+                    $blocklist = new \App\Modules\Blocklist();
+                    $results = $blocklist->getBlocklistFWDrop();
+                    $nexcloud = new FWDropReport();
+                    $reports = $nexcloud->generate($results);
+                    setJSON(array(['blocklist' => $results, 'nextcloud_report' => $reports]), 200);
+                    break;
+
                 case 'jobs':
                     $jobs = new \App\Modules\Jobs(
                         $this->request->post('date_start'),
@@ -257,6 +266,11 @@ class Main
                                 'method' => 'GET',
                                 'path' => '/create24h-report',
                                 'description' => 'Generate 24-hour blocklist report to PDF file.'
+                            ],
+                            [
+                                'method' => 'GET',
+                                'path' => '/fwdrop-report',
+                                'description' => 'Generate 24-hour firewall drop report to PDF file.'
                             ]
                         ]
                     ], 200);
