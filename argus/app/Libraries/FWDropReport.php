@@ -6,78 +6,86 @@ use Dompdf\Options;
 
 class FWDropReport
 {
+    private function quickChart(string $type, string $title, array $dataset, string $labelName = ''): string
+    {
+        $config = [
+            'type' => $type,
+            'data' => [
+                'labels' => array_keys($dataset),
+                'datasets' => [[
+                    'data' => array_values($dataset)
+                ]]
+            ],
+            'options' => [
+                'title' => ['display' => true, 'text' => $title]
+            ]
+        ];
+        if (!empty($labelName)) {
+            $config['data']['datasets'][0]['label'] = $labelName;
+        }
+        $url = 'https://quickchart.io/chart?width=900&height=350&c='
+            . urlencode(json_encode($config));
+
+        return 'data:image/png;base64,' . base64_encode(file_get_contents($url));
+    }
+
     /**
      * ===============================
      * GENERATE CHART IMAGE
      * ===============================
      */
-    private function generateChart(array $data): string
+    private function generateCharts(array $data): array
     {
         $countries = [];
+        $isps = [];
+        $ipCounts = [];
+        $uniqueIps = [];
+        $targets = [];
 
         foreach ($data as $row) {
-            // Explode: Negara - Kota
-            $country = $row['country'];
+            $country = $row['country'] ?? 'Unknown';
+            $isp     = $row['isp'] ?? 'Unknown';
+            $ip      = $row['ip_address'] ?? '';
+            $agent   = $row['agent_name'] ?? 'Unknown';
+            $count   = (int)($row['count'] ?? 1);
 
-            if (!isset($countries[$country])) {
-                $countries[$country] = 0;
-            }
-
-            $countries[$country]++;
+            $countries[$country] = ($countries[$country] ?? 0) + 1;
+            $isps[$isp] = ($isps[$isp] ?? 0) + 1;
+            $ipCounts[$ip] = ($ipCounts[$ip] ?? 0) + $count;
+            $uniqueIps[$ip] = true;
+            $targets[$agent] = ($targets[$agent] ?? 0) + 1;
         }
 
-        $labels = array_keys($countries);
-        $values = array_values($countries);
+        arsort($countries);
+        arsort($isps);
+        arsort($ipCounts);
+        arsort($targets);
 
-        $config = [
-            'type' => 'bar',
-            'data' => [
-                'labels' => $labels,
-                'datasets' => [[
-                    'label' => 'Source Country',
-                    'data' => $values,
-                    'backgroundColor' => 'rgba(54, 162, 235, 0.7)'
-                ]]
-            ],
-            "options" => [
-                "responsive" => true,
-                "title" => [
-                    "display" => true,
-                    "text" => "Attackers per Country"
-                ],
-                "scales" => [
-                    "xAxes" => [
-                        "gridLines" => [
-                            "display" => true
-                        ]
-                    ],
-                    "yAxes" => [
-                        "gridLines" => [
-                            "display" => true
-                        ],
-                        "min" => 0,
-                        "ticks" => [
-                            "stepSize" => 5
-                        ]
-                    ]
-                ]
-            ]
+        $topCountries = array_slice($countries, 0, 10, true);
+        $topIsps      = array_slice($isps, 0, 10, true);
+        $topTargets   = array_slice($targets, 0, 10, true);
+
+        $topIp = array_key_first($ipCounts);
+        $topIpCount = $ipCounts[$topIp] ?? 0;
+
+        return [
+            'countryChart' => $this->quickChart('bar', 'Top 10 Source Country', $topCountries, 'Country Name'),
+            'ispChart'     => $this->quickChart('pie', 'Top 10 ISP', $topIsps),
+            'targetChart'  => $this->quickChart('horizontalBar', 'Top 10 Target', $topTargets, 'Agent Name'),
+            'totalIp'      => count($uniqueIps),
+            'topIp'        => $topIp,
+            'topIpCount'   => $topIpCount
         ];
-
-        $url = 'https://quickchart.io/chart?width=900&height=350&c='
-            . urlencode(json_encode($config));
-
-        $image = file_get_contents($url);
-
-        return 'data:image/png;base64,' . base64_encode($image);
     }
+
+
 
     /**
      * ===============================
      * BUILD HTML PDF
      * ===============================
      */
-    private function buildHtml(array $data, string $chartPath): string
+    private function buildHtml(array $data, array $charts): string
     {
         $period = date('d M Y H:i', strtotime('-24 hours')) . ' - ' . date('d M Y H:i');
         
@@ -109,6 +117,39 @@ class FWDropReport
                     box-shadow: none;
                 }
                 
+                .two-col {
+                    display: table;
+                    width: 100%;
+                    table-layout: fixed;
+                    margin-bottom: 5px;
+                }
+
+                .col {
+                    display: table-cell;
+                    width: 50%;
+                    vertical-align: top;
+                    padding: 5px;
+                }
+
+                .card {
+                    background: #f8f9fa;
+                    border-left: 4px solid #3498db;
+                    padding: 15px;
+                    border-radius: 6px;
+                }
+
+                .card h3 {
+                    font-size: 12px;
+                    margin-bottom: 8px;
+                    color: #7f8c8d;
+                    text-transform: uppercase;
+                }
+
+                .card .value {
+                    font-size: 26px;
+                    font-weight: bold;
+                }
+
                 /* Header */
                 .header {
                     text-align: center;
@@ -168,7 +209,7 @@ class FWDropReport
                     font-weight: 600;
                     text-transform: uppercase;
                     letter-spacing: 0.5px;
-                    margin-bottom: 8px;
+                    margin-bottom: 5px;
                 }
                 
                 .summary-box .value {
@@ -179,7 +220,7 @@ class FWDropReport
                 
                 /* Chart Section */
                 .chart-section {
-                    margin: 30px 0;
+                    margin: 5px 0;
                     padding: 20px;
                     background: #f8f9fa;
                     border-radius: 8px;
@@ -324,11 +365,42 @@ class FWDropReport
                     <h1>Wazuh FW Drop Report</h1>
                     <p style='margin-top: 10px;'>Period: {$period}</p>
                 </div>
-                
-                <!-- Chart Section -->
-                <div class='chart-section'>
-                    <img src='{$chartPath}' alt='Score Distribution Chart'>
+                <div class='two-col'>
+                    <div class='col'>
+                        <div class='card'>
+                            <h3>Total Unique IP</h3>
+                            <div class='value'>{$charts['totalIp']}</div>
+                        </div>
+                    </div>
+                    <div class='col'>
+                        <div class='card' style='border-left-color:#e74c3c'>
+                            <h3>Top Attacker IP</h3>
+                            <div class='value'>{$charts['topIp']}</div>
+                            <div>Total Events: {$charts['topIpCount']}</div>
+                        </div>
+                    </div>
                 </div>
+                <!-- Chart Section -->
+                <div class='two-col'>
+                    <div class='col'>
+                        <div class='chart-section'>
+                            <div class='section-title'>Top 10 Source Country</div>
+                            <img src='{$charts['countryChart']}'>
+                        </div>
+                    </div>
+                    <div class='col'>
+                        <div class='chart-section'>
+                            <div class='section-title'>Top 10 ISP</div>
+                            <img src='{$charts['ispChart']}'>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class='chart-section'>
+                    <div class='section-title'>Top 10 Target</div>
+                    <img src='{$charts['targetChart']}'>
+                </div>
+
                 <div class='page_break'></div>
                 <!-- Detail Data Table -->
                 <div class='table-section'>
@@ -489,8 +561,8 @@ class FWDropReport
     {
         $filename = 'Wazuh-FWdrop-report-' . date('Ymd-His') . '.pdf';
 
-        $chart = $this->generateChart($data);
-        $html = $this->buildHtml($data, $chart);
+        $charts = $this->generateCharts($data);
+        $html = $this->buildHtml($data, $charts);
         $pdfFile = $this->createPdf($html, $filename);
 
         if (empty($_ENV['NEXTCLOUD_BASE']) || empty($_ENV['NEXTCLOUD_USER'])) {

@@ -70,9 +70,9 @@ composer-update:
 	docker compose -f docker-compose.dev.yml exec php-fpm composer update
 
 db-backup:
-    docker compose -f docker-compose.dev.yml exec mariadb sh -c \
-        "mariadb-dump -u root -p$$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE" \
-        > ./database/backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+	docker compose -f docker-compose.dev.yml exec mariadb sh -c \
+		"mariadb-dump -u root -p$$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE" \
+		> ./database/backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
 
 
 clean:
