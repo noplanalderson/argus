@@ -163,7 +163,7 @@ class Sangfor
     public function deleteBlackWhite(array $data)
     {
         $body = json_encode([
-            'enable'      => $data['enable'],
+            'enable'      => true,
             'type'        => $data['type'],
             'url'         => $data['url'],
             'description' => $data['description']
