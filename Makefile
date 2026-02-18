@@ -1,4 +1,6 @@
 # Makefile for Argus Threat Intelligence Service
+include .env
+export
 
 .PHONY: help dev-build dev-up dev-down dev-restart dev-logs prod-build prod-up prod-down prod-restart prod-logs clean
 
@@ -68,7 +70,10 @@ composer-update:
 	docker compose -f docker-compose.dev.yml exec php-fpm composer update
 
 db-backup:
-	docker compose -f docker-compose.dev.yml exec mariadb mariadb-dump -u ${MYSQL_USER} -p${MYSQL_PASSWORD} ${MYSQL_DATABASE} > ./database/backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+    docker compose -f docker-compose.dev.yml exec mariadb sh -c \
+        "mariadb-dump -u root -p$$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE" \
+        > ./database/backups/backup_$(shell date +%Y%m%d_%H%M%S).sql
+
 
 clean:
 	docker compose -f docker-compose.dev.yml down -v
