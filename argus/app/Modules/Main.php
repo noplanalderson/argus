@@ -184,7 +184,7 @@ class Main
                     $results = $blocklist->getBlocklistFWDrop();
                     $nexcloud = new FWDropReport();
                     $reports = $nexcloud->generate($results);
-                    setJSON(array(['blocklist' => $results, 'nextcloud_report' => $reports]), 200);
+                    setJSON(array(['total_ips' => count($results), 'nextcloud_report' => $reports]), 200);
                     break;
 
                 case 'jobs':
