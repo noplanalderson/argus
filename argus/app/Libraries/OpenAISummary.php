@@ -13,7 +13,7 @@ class OpenAISummary
     public function __construct()
     {
         $this->client = new Client([
-            'timeout' => 120,
+            'timeout' => 300,
         ]);
     }
 
