@@ -259,9 +259,9 @@ class NextcloudReport
                     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
                 }
                 
-                table thead {
-                    background: #2c3e50;
-                    color: white;
+                table thead th {
+                    background: #2c3e50 !important;
+                    color: white !important;
                 }
                 
                 table th {
