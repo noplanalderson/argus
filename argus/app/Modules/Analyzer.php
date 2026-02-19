@@ -384,7 +384,7 @@ class Analyzer
             // } elseif($previousBlock === '7d') {
             //     $decision = 'permanent';
             // } else {
-            if(inRange(15, 49.99, round($this->data['scores']['overall']['score'],2)) || $this->wazuhRule['frequency'] >= 8) {
+            if(inRange(15, 49.99, round($this->data['scores']['overall']['score'],2)) && $this->wazuhRule['frequency'] >= 8) {
                 // override keputusan berdasarkan frequency (SRP : Single Responsibility Principle)
                 $decision = '7d';
             } elseif(inRange(15, 29.99, round($this->data['scores']['overall']['score'],2))) {
@@ -504,44 +504,6 @@ class Analyzer
                         }
                     }
                 }
-
-                // if(empty($this->data['recentHistory']))
-                // {
-                //     try {
-            
-                //         DB::table('tb_analysis_history')->insert([
-                //             'history_id_uuid' => Uuid::uuid7()->toString(),
-                //             'ip_id_uuid' => $history['ip_id_uuid'],
-                //             'vt_score' => $this->data['scores']['virustotal'],
-                //             'crowdsec_score' => $this->data['scores']['crowdsec'],
-                //             'abuseip_score' => $this->data['scores']['abuseipdb'],
-                //             'criminalip_score' => $this->data['scores']['criminalip'],
-                //             'blocklist_score' => $this->data['scores']['blocklist'],
-                //             'opencti_score' => $this->data['scores']['opencti'],
-                //             'overall_score' => round($this->data['scores']['overall']['score'], 2),
-                //             'decision' => json_encode($this->data['decision']),
-                //             'created_at' => date("Y-m-d H:i:s")
-                //         ]);
-                //     } catch (\Throwable $th) {
-                //         $this->logError('DB_OPERATION', $th->getMessage());
-                //     }
-                // }
-                // else 
-                // {
-                //     if($this->wazuhRule['frequency'] > 7 && $this->data['scores']['overall']['score'] < 50) {
-                //         $this->decision();
-
-                //         DB::table("tb_analysis_history")->where('history_id_uuid', $history['history_id_uuid'])->update([
-                //             'decision' => json_encode($this->data['decision']),
-                //             'updated_at' => date("Y-m-d H:i:s")
-                //         ]);
-                        
-                //         $this->data['recentHistory'] = (strtotime("now") > $unblock) ? null : $history;
-
-                //     } else {
-                //         $this->logInfo('INFO', 'No update made. IP ' . $this->reports['observable'] . ' is still under block period.');
-                //     }
-                // }
             } else {
                 try {
                     $this->data['scores']['overall'] = $scoreOverall;
