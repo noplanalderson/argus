@@ -198,6 +198,38 @@ class Main
                     setJSON($results, 200);
                     break;
 
+                case 'lookup-jobs':
+                    $observable = $this->request->post('observable') ?? null;
+                    // Validate if $observable is a valid IP or SHA1
+                    if (
+                        !filter_var($observable, FILTER_VALIDATE_IP) &&
+                        !preg_match('/^[a-f0-9]{40}$/i', $observable) &&   // SHA1
+                        !preg_match('/^[a-f0-9]{64}$/i', $observable) &&   // SHA256
+                        !preg_match('/^[a-f0-9]{96}$/i', $observable) &&   // SHA384
+                        !preg_match('/^[a-f0-9]{32}$/i', $observable)      // SHA128 (MD5)
+                    ) {
+                        setJSON([
+                            'code' => 400,
+                            'error' => 'Bad Request',
+                            'message' => 'Observable must be a valid IP address or SHA hash.'
+                        ], 400);
+                        break;
+                    }
+                    $jobs = new \App\Modules\Jobs();
+                    $results = $jobs->getJobByObservable($observable);
+                    if(empty($results)) {
+                        
+                        $type = filter_var($observable, FILTER_VALIDATE_IP) ? 'ip' : 'hash';
+                        $sources = TIPConfig::getSources($type);
+                        $agg = new ArgusAggregator($observable, $sources);
+                        $agg->run();
+
+                        $jobs = new \App\Modules\Jobs();
+                        $results = $jobs->getJobByObservable($observable);
+                    }
+                    setJSON($results, 200);
+                    break;
+
                 default:
                     setJSON([
                         'code' => 200,

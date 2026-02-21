@@ -18,10 +18,10 @@ class Jobs
     protected $limit = 10;
     protected $offset = 0;
 
-    public function __construct($dateStart, $dateEnd, $limit, $offset)
+    public function __construct($dateStart = null, $dateEnd = null, $limit = 10, $offset = 0)
     {
-        $this->dateStart = $dateStart;
-        $this->dateEnd = $dateEnd;
+        $this->dateStart = $dateStart ?? date('Y-m-d', strtotime('-7 days'));
+        $this->dateEnd = $dateEnd ?? date('Y-m-d');
         $this->limit = abs($limit);
         $this->offset = abs($offset);
     }
@@ -47,5 +47,19 @@ class Jobs
         }
 
         return $data;
+    }
+
+    public function getJobByObservable($observable)
+    {
+        $result = DB::table('tb_jobs')
+                    ->select('observable, created_at, JSON_UNQUOTE(results) AS results')
+                    ->where('observable', '=', $observable)
+                    ->first();
+                    
+        return $result ? [
+            'observable' => $result['observable'],
+            'created_at' => $result['created_at'],
+            'results' => json_decode($result['results'], true)
+        ] : null;
     }
 }
