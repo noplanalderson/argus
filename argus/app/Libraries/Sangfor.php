@@ -136,7 +136,7 @@ class Sangfor
     public function createBlackWhite(array $data) 
     {
         $body = json_encode([
-            'enable'      => $data['enable'],
+            'enable'      => true,
             'type'        => $data['type'],
             'url'         => $data['ip_address'],
             'description' => $data['description']
