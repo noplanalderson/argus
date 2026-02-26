@@ -437,4 +437,116 @@ class QueryBuilder
         }
         return $query;
     }
+
+    public function dataTables(array $options): array
+    {
+        $search        = $options['search'] ?? null;
+        $searchable    = $options['searchable'] ?? [];
+        $columnSearch  = $options['columnSearch'] ?? []; // optional
+        $orderColumn   = $options['orderColumn'] ?? null;
+        $orderDir      = strtoupper($options['orderDir'] ?? 'ASC');
+        $start         = (int) ($options['start'] ?? 0);
+        $length        = (int) ($options['length'] ?? 10);
+        $distinct      = $options['distinct'] ?? null; // optional DISTINCT column
+
+        /*
+        * ===============================
+        * CLONE BASE QUERY
+        * ===============================
+        */
+        $baseQuery = clone $this;
+
+        /*
+        * ===============================
+        * TOTAL RECORDS (NO SEARCH)
+        * ===============================
+        */
+        $totalQuery = clone $baseQuery;
+        $totalQuery->orderBy = [];
+        $totalQuery->limit = null;
+        $totalQuery->offset = 0;
+
+        if ($distinct) {
+            $totalQuery->fields = ["COUNT(DISTINCT {$distinct}) as count"];
+        } else {
+            $totalQuery->fields = ['COUNT(*) as count'];
+        }
+
+        $recordsTotal = (int) ($totalQuery->first()['count'] ?? 0);
+
+        /*
+        * ===============================
+        * APPLY GLOBAL SEARCH
+        * ===============================
+        */
+        if (!empty($search) && !empty($searchable)) {
+
+            $conditions = [];
+            $bindings   = [];
+
+            foreach ($searchable as $index => $column) {
+                $bindKey = ":dt_search_{$index}";
+                $conditions[] = "{$column} LIKE {$bindKey}";
+                $bindings[$bindKey] = "%{$search}%";
+            }
+
+            $expression = implode(' OR ', $conditions);
+            $this->whereRaw("({$expression})", $bindings);
+        }
+
+        /*
+        * ===============================
+        * APPLY COLUMN SEARCH
+        * ===============================
+        */
+        if (!empty($columnSearch)) {
+            foreach ($columnSearch as $column => $value) {
+                if ($value !== null && $value !== '') {
+                    $this->where($column, 'LIKE', "%{$value}%");
+                }
+            }
+        }
+
+        /*
+        * ===============================
+        * RECORDS FILTERED
+        * ===============================
+        */
+        $filteredQuery = clone $this;
+        $filteredQuery->orderBy = [];
+        $filteredQuery->limit = null;
+        $filteredQuery->offset = 0;
+
+        if ($distinct) {
+            $filteredQuery->fields = ["COUNT(DISTINCT {$distinct}) as count"];
+        } else {
+            $filteredQuery->fields = ['COUNT(*) as count'];
+        }
+
+        $recordsFiltered = (int) ($filteredQuery->first()['count'] ?? 0);
+
+        /*
+        * ===============================
+        * ORDERING
+        * ===============================
+        */
+        if ($orderColumn) {
+            $this->orderBy($orderColumn, $orderDir === 'DESC' ? 'DESC' : 'ASC');
+        }
+
+        /*
+        * ===============================
+        * LIMIT
+        * ===============================
+        */
+        $this->limit($length, $start);
+
+        $data = $this->get();
+
+        return [
+            'recordsTotal'    => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data'            => $data
+        ];
+    }
 }

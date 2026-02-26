@@ -184,9 +184,10 @@ class Main
                     $dateEnd = $this->request->post('date_end', null);
                     $limit = $this->request->post('limit', 10);
                     $offset = $this->request->post('offset', 0);
+                    $query = $this->request->post('query', null);
                     $generateReport = $this->request->post('generate_report', false);
 
-                    $blocklist = new \App\Modules\Blocklist($dateStart, $dateEnd, $limit, $offset);
+                    $blocklist = new \App\Modules\Blocklist($dateStart, $dateEnd, $limit, $offset, $query);
                     if($generateReport) {
                         $results = $blocklist->getBlocklistFWDrop();
                         $nexcloud = new FWDropReport();
@@ -194,7 +195,13 @@ class Main
                         setJSON(array(['total_ips' => count($results), 'nextcloud_report' => $reports]), 200);
                     } else {
                         $results = $blocklist->getBlocklistFWDropPeriod();
-                        setJSON(['count' => count($results), 'data' => $results], 200);
+                        $data = [
+                            "draw" => 1,
+                            "recordsTotal" => $results['recordsTotal'],
+                            "recordsFiltered" => $results['recordsFiltered'],
+                            "data" => $results['data']
+                        ];
+                        setJSON($data, 200);
                     }
                     break;
 
