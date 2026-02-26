@@ -182,8 +182,8 @@ class Main
                 case 'fwdrop-report':
                     $dateStart = $this->request->post('date_start', null);
                     $dateEnd = $this->request->post('date_end', null);
-                    $limit = $this->request->post('limit', null);
-                    $offset = $this->request->post('offset', null);
+                    $limit = $this->request->post('limit', 10);
+                    $offset = $this->request->post('offset', 0);
                     $generateReport = $this->request->post('generate_report', false);
 
                     $blocklist = new \App\Modules\Blocklist($dateStart, $dateEnd, $limit, $offset);
@@ -194,7 +194,7 @@ class Main
                         setJSON(array(['total_ips' => count($results), 'nextcloud_report' => $reports]), 200);
                     } else {
                         $results = $blocklist->getBlocklistFWDropPeriod();
-                        setJSON($results, 200);
+                        setJSON(['count' => count($results), 'data' => $results], 200);
                     }
                     break;
 
