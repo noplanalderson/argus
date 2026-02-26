@@ -18,12 +18,15 @@ class Blocklist
     protected $limit = 10;
     protected $offset = 0;
 
-    public function __construct($dateStart = null, $dateEnd = null, $limit = 0, $offset = 0)
+    protected $search = null;
+
+    public function __construct($dateStart = null, $dateEnd = null, $limit = 0, $offset = 0, $search = null)
     {
         $this->dateStart = $dateStart;
         $this->dateEnd = $dateEnd;
         $this->limit = abs($limit);
         $this->offset = abs($offset);
+        $this->search = $search;
     }
 
     public function getBlocklist()
@@ -94,25 +97,46 @@ class Blocklist
         return $results;
     }
 
-    public function getBlocklistFWDropPeriod()
+    public function getBlocklistFWDropPeriod(): array
     {
-        $results = DB::from('firewall_drop', 'b')
-                        ->select([
-                            'b.ip_address',
-                            'b.isp',
-                            'b.country',
-                            'b.city',
-                            'a.created_at',
-                            'a.agent_name',
-                            'a.count',
-                        ])
-                        ->join('fw_drop_event AS a', 'b._id = a.source_ip_id')
-                        ->whereRaw('b.created_at >= :start', [':start' => $this->dateStart])
-                        ->whereRaw('b.created_at <= :end', [':end' => $this->dateEnd])
-                        ->orderBy('b.created_at', 'desc')
-                        ->orderBy('a.count', 'desc')
-                        ->get();
-            
-        return $results;
+        $query = DB::from('firewall_drop', 'b')
+            ->select([
+                'b.ip_address',
+                'b.isp',
+                'b.country',
+                'b.city',
+                'a.created_at',
+                'a.agent_name',
+                'a.count',
+            ])
+            ->join('fw_drop_event AS a', 'b._id = a.source_ip_id')
+            ->whereRaw('b.created_at >= :startDate', [
+                ':startDate' => $this->dateStart
+            ])
+            ->whereRaw('b.created_at <= :endDate', [
+                ':endDate' => $this->dateEnd
+            ]);
+
+        return $query->dataTables([
+            'search' => $this->search ?? null,
+
+            // kolom yang boleh di-search
+            'searchable' => [
+                'b.ip_address',
+                'b.isp',
+                'b.country',
+                'b.city',
+                'a.agent_name'
+            ],
+
+            // karena join 1:N → wajib distinct
+            'distinct' => 'b._id',
+
+            'orderColumn' => 'b.created_at',
+            'orderDir'    => 'DESC',
+
+            'start'  => $this->offset ?? 0,
+            'length' => $this->limit ?? 10,
+        ]);
     }
 }
