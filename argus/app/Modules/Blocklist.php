@@ -93,4 +93,26 @@ class Blocklist
             
         return $results;
     }
+
+    public function getBlocklistFWDropPeriod()
+    {
+        $results = DB::from('firewall_drop', 'b')
+                        ->select([
+                            'b.ip_address',
+                            'b.isp',
+                            'b.country',
+                            'b.city',
+                            'a.created_at',
+                            'a.agent_name',
+                            'a.count',
+                        ])
+                        ->join('fw_drop_event AS a', 'b._id = a.source_ip_id')
+                        ->whereRaw('b.created_at >= :start', [':start' => $this->dateStart])
+                        ->whereRaw('b.created_at <= :end', [':end' => $this->dateEnd])
+                        ->orderBy('b.created_at', 'desc')
+                        ->orderBy('a.count', 'desc')
+                        ->get();
+            
+        return $results;
+    }
 }

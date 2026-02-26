@@ -180,11 +180,22 @@ class Main
                     break;
 
                 case 'fwdrop-report':
-                    $blocklist = new \App\Modules\Blocklist();
-                    $results = $blocklist->getBlocklistFWDrop();
-                    $nexcloud = new FWDropReport();
-                    $reports = $nexcloud->generate($results);
-                    setJSON(array(['total_ips' => count($results), 'nextcloud_report' => $reports]), 200);
+                    $dateStart = $this->request->post('date_start', null);
+                    $dateEnd = $this->request->post('date_end', null);
+                    $limit = $this->request->post('limit', null);
+                    $offset = $this->request->post('offset', null);
+                    $generateReport = $this->request->post('generate_report', false);
+
+                    $blocklist = new \App\Modules\Blocklist($dateStart, $dateEnd, $limit, $offset);
+                    if($generateReport) {
+                        $results = $blocklist->getBlocklistFWDrop();
+                        $nexcloud = new FWDropReport();
+                        $reports = $nexcloud->generate($results);
+                        setJSON(array(['total_ips' => count($results), 'nextcloud_report' => $reports]), 200);
+                    } else {
+                        $results = $blocklist->getBlocklistFWDropPeriod();
+                        setJSON($results, 200);
+                    }
                     break;
 
                 case 'jobs':
